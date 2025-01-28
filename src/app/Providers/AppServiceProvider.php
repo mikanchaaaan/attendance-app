@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
         // @formatTimeでH:iの形式で時間を表示できるようにする
         Blade::directive('formatTime', function ($expression) {
-            return "<?php echo \Carbon\Carbon::parse($expression)->format('H:i'); ?>";
+            return "<?php echo $expression ? \Carbon\Carbon::parse($expression)->format('H:i') : '-'; ?>";
         });
 
         // @formatDateでXX/XX(曜日)の形式で日にちを表示できるようにする

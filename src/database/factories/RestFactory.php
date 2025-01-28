@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
+use App\Models\Rest;
 use App\Models\Attendance;
 
 /**
@@ -19,19 +20,44 @@ class RestFactory extends Factory
     public function definition(): array
     {
         // 既存のAttendanceをランダムに取得
-        $attendance = Attendance::inRandomOrder()->first();  // ランダムに1件取得
+        $attendance = Attendance::inRandomOrder()->first();
 
-        // 出勤時間を取得
+        // 出勤時間と退勤時間を取得
         $clockInTime = strtotime($attendance->clock_in_time);
         $clockOutTime = strtotime($attendance->clock_out_time);
 
-        // 休憩開始時間を出勤時間からランダムに決定（出勤から2時間以内などに設定）
-        $restInTime = date('H:i:s', rand($clockInTime, $clockOutTime - 1));
+        // 勤務時間を計算（秒単位）
+        $workDuration = $clockOutTime - $clockInTime;
 
-        // 休憩終了時間を休憩開始時間からランダムに決定（休憩時間は1時間～勤務時間の残り時間以内）
-        // 勤務時間内に収めるため、休憩終了時間は退勤時間を越えないように調整
-        $maxRestDuration = $clockOutTime - strtotime($restInTime);  // 休憩終了時間の最大時間は退勤時間から休憩開始時間まで
-        $restOutTime = date('H:i:s', min(strtotime($restInTime) + rand(3600, min(28800, $maxRestDuration)), $clockOutTime));
+        // 勤務時間が1時間未満の場合は休憩を作成しない
+        if ($workDuration < 3600) {
+            return [];
+        }
+
+        // 既存の休憩時間を計算
+        $existingRestDuration = Rest::where('attendance_id', $attendance->id)
+            ->get()
+            ->reduce(function ($carry, $rest) {
+                $restIn = strtotime($rest->rest_in_time);
+                $restOut = strtotime($rest->rest_out_time);
+                return $carry + ($restOut - $restIn);
+            }, 0);
+
+        // 残りの勤務時間（秒単位）
+        $remainingWorkTime = $workDuration - $existingRestDuration;
+
+        // 残りの勤務時間が30分（1800秒）未満の場合は休憩を作成しない
+        if ($remainingWorkTime < 1800) {
+            return [];
+        }
+
+        // 休憩開始時間をランダムに設定（出勤時間から退勤時間の間）
+        $latestPossibleRestStart = $clockOutTime - min(3600, $remainingWorkTime); // 残り時間内に収まる最大休憩時間
+        $restInTime = date('H:i:s', rand($clockInTime, $latestPossibleRestStart));
+
+        // 休憩終了時間を設定（最大1時間、残り勤務時間内に収める）
+        $maxRestDuration = min(3600, $remainingWorkTime); // 最大1時間または残り勤務時間
+        $restOutTime = date('H:i:s', strtotime($restInTime) + rand(1800, $maxRestDuration));
 
         return [
             'attendance_id' => $attendance->id,

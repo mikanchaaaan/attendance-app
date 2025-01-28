@@ -29,7 +29,7 @@
 @endsection
 
 @section('content')
-<div class="attendanceList">
+<div class="container">
     <h1>勤怠一覧</h1>
 
     <div class="attendanceList__selectMonth">
@@ -58,30 +58,37 @@
                         <td>@formatTime($attendance->clock_out_time)</td>
                         <td>
                             @php
-                                $totalRestTime = $restTimes[$attendance->id]->total_rest_time ?? 0; // 対応するデータがなければ 0
-                                $hours = floor($totalRestTime / 60); // 時間部分
-                                $minutes = $totalRestTime % 60; // 分部分
+                                // 初期値を設定（対応するデータがない場合や勤務未完了時に備える）
+                                $totalRestTime = $restTimes[$attendance->id]->total_rest_time ?? 0;
                             @endphp
-                            {{ sprintf('%02d:%02d', $hours, $minutes) }}
+
+                            @if ($attendance->clock_out_time)
+                                @php
+                                    $hours = floor($totalRestTime / 60); // 時間部分
+                                    $minutes = $totalRestTime % 60; // 分部分
+                                @endphp
+                                {{ sprintf('%02d:%02d', $hours, $minutes) }}
+                            @else
+                                - <!-- 勤務未完了時の表示 -->
+                            @endif
                         </td>
                         <td>
-                            @php
-                                // 勤務時間の計算 (勤務開始 - 勤務終了)
-                                $start = strtotime($attendance->clock_in_time);
-                                $end = strtotime($attendance->clock_out_time);
-                                $workTime = ($end - $start) / 60; // 分単位で勤務時間を計算
-
-                                // 休憩時間を差し引いた勤務時間
-                                $workTime -= $totalRestTime; // 休憩時間を引く
-
-                                // 時間と分に変換
-                                $workHours = floor($workTime / 60); // 勤務時間の時間部分
-                                $workMinutes = $workTime % 60; // 勤務時間の分部分
-                            @endphp
-                            {{ sprintf('%02d:%02d', $workHours, $workMinutes) }}
+                            @if ($attendance->clock_out_time)
+                                @php
+                                    // 勤務時間を計算（退勤後のみ）
+                                    $start = \Illuminate\Support\Carbon::parse($attendance->clock_in_time);
+                                    $end = \Illuminate\Support\Carbon::parse($attendance->clock_out_time);
+                                    $workTime = $end->diffInMinutes($start) - $totalRestTime;
+                                    $workHours = floor($workTime / 60);
+                                    $workMinutes = $workTime % 60;
+                                @endphp
+                                {{ sprintf('%02d:%02d', $workHours, $workMinutes) }}
+                            @else
+                                - <!-- 退勤していない場合は表示しない -->
+                            @endif
                         </td>
                         <td>
-                            <a href="">詳細</a>
+                            <a href="/attendance/{{ $attendance->id }}">詳細</a>
                         </td>
                     </tr>
                 @endforeach
