@@ -19,4 +19,7 @@ Route::middleware(['auth'])->group(function () {
     // 休憩戻時
     Route::post('/attendance/restOut', [AttendanceController::class, 'restOut']);
 
+    // 勤怠一覧の表示
+    Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
+
 });

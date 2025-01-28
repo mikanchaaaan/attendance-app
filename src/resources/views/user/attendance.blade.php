@@ -2,6 +2,15 @@
 
 @section('page-move')
     <div class="header__button">
+        <div class="header__button--attendance">
+            <a href="/attendance" class="goto">勤怠</a>
+        </div>
+        <div class="header__button--attendance-list">
+            <a href="/attendance/list" class="goto">勤怠一覧</a>
+        </div>
+        <div class="header__button--attendance-request">
+            <a href="/stamp_correction_request/list" class="goto">申請</a>
+        </div>
         @auth
             <!-- ログインしている場合 -->
             <div class="header__button--logout">
