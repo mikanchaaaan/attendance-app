@@ -10,8 +10,6 @@ class Rest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attendance_id',
-        'user_id',
         'rest_in_time',
         'rest_out_time',
     ];
@@ -23,7 +21,12 @@ class Rest extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(Attendance::class, 'attendance_rest', 'rest_id', 'attendance_id');
+    }
+
+    public function attendanceRequests()
+    {
+        return $this->belongsToMany(AttendanceRequest::class, 'attendance_request_rest', 'rest_id', 'attendance_request_id');
     }
 }
 

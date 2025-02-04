@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requests', function (Blueprint $table) {
+        Schema::create('attendance_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('rest_id')->constrained()->cascadeOnDelete();
-            $table->time('request_clock_in_time')->nullable();
-            $table->time('request_clock_out_time')->nullable();
-            $table->time('request_rest_in_time')->nullable();
-            $table->time('request_rest_out_time')->nullable();
+            $table->date('requested_clock_date')->nullable();
+            $table->string('status')->default('pending');
+            $table->time('requested_clock_in_time')->nullable();
+            $table->time('requested_clock_out_time')->nullable();
+            $table->string('comment');
             $table->timestamps();
         });
     }

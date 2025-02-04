@@ -27,4 +27,10 @@ Route::middleware(['auth'])->group(function () {
     // 勤怠詳細の表示
     Route::get('/attendance/{attendance_id}', [userRequestAttendanceController::class, 'userDetailView']);
 
+    // 勤怠申請
+    Route::post('attendance/request', [userRequestAttendanceController::class, 'attendanceRequest']);
+
+    // 勤怠申請一覧の表示
+    Route::get('/stamp_correction_request/list', [userRequestAttendanceController::class, 'requestView']);
+
 });

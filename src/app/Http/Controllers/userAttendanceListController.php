@@ -28,28 +28,70 @@ class userAttendanceListController extends Controller
         $prevMonth = $currentMonthCarbon->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonthCarbon->copy()->addMonth()->format('Y-m');
 
-        // 指定された月の勤怠データを取得
-        $startOfMonth = $currentMonthCarbon->copy();
-        $startOfMonth->startOfMonth();  // 明示的に startOfMonth を呼び出す
+        // 当月の開始日と終了日
+        $startOfMonth = $currentMonthCarbon->copy()->startOfMonth();
+        $endOfMonth = $currentMonthCarbon->copy()->endOfMonth();
 
-        $endOfMonth = $currentMonthCarbon->copy();
-        $endOfMonth->endOfMonth();  // 明示的に endOfMonth を呼び出す
-
+        // 当月の勤怠データを取得
         $attendances = Attendance::where('user_id', $user->id)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->get();
-
-        // 休憩時間の算出
-        $restTimes = Rest::selectRaw('attendance_id, SUM(TIMESTAMPDIFF(MINUTE, rest_in_time, rest_out_time)) as total_rest_time')
-            ->whereIn('attendance_id', function ($query) use ($user) {
-                $query->select('id')
-                    ->from('attendances')
-                    ->where('user_id', $user->id);
-            })
-            ->groupBy('attendance_id')
+            ->with('rests') // Rest データを取得（中間テーブル経由）
             ->get()
-            ->keyBy('attendance_id'); // attendance_id をキーにする
+            ->keyBy('date'); // 日付をキーにする
 
-        return view('user.attendanceList', compact('currentMonth', 'prevMonth', 'nextMonth', 'attendances', 'restTimes'));
+        // **当月の日付リストを作成**
+        $dates = [];
+        for ($date = $startOfMonth->copy(); $date <= $endOfMonth; $date->addDay()) {
+            $dates[$date->format('Y-m-d')] = [
+                'date' => $date->format('Y-m-d'),
+                'clock_in_time' => null,
+                'clock_out_time' => null,
+                'work_time' => '00:00',
+                'rest_time' => '00:00',
+                'attendance_id' => null,
+            ];
+        }
+
+        // **勤怠データをマージ**
+        foreach ($attendances as $date => $attendance) {
+            $clockInTime = Carbon::parse($attendance->clock_in_time);
+            $clockOutTime = $attendance->clock_out_time ? Carbon::parse($attendance->clock_out_time) : null;
+
+            // 退勤が出勤より前なら翌日とみなす
+            if ($clockOutTime && $clockOutTime < $clockInTime) {
+                $clockOutTime->addDay();
+            }
+
+            // 勤務時間計算
+            $workTime = $clockOutTime ? $clockInTime->diffInMinutes($clockOutTime) : 0;
+
+            // **休憩時間を計算**
+            $restTime = 0;
+            foreach ($attendance->rests as $rest) {
+                if ($rest->rest_out_time) {
+                    $restIn = Carbon::parse($rest->rest_in_time);
+                    $restOut = Carbon::parse($rest->rest_out_time);
+                    $restTime += $restIn->diffInMinutes($restOut);
+                }
+            }
+
+            $restHours = floor($restTime / 60);
+            $restMinutes = $restTime % 60;
+            $workTime -= $restTime;
+            $workHours = floor($workTime / 60);
+            $workMinutes = $workTime % 60;
+
+            // マージ
+            $dates[$date] = [
+                'date' => $date,
+                'clock_in_time' => $attendance->clock_in_time,
+                'clock_out_time' => $attendance->clock_out_time,
+                'work_time' => sprintf('%02d:%02d', $workHours, $workMinutes),
+                'rest_time' => sprintf('%02d:%02d', $restHours, $restMinutes),
+                'attendance_id' => $attendance->id ?? null, // 勤怠データがない日は null
+            ];
+        }
+
+        return view('user.attendanceList', compact('currentMonth', 'prevMonth', 'nextMonth', 'dates'));
     }
 }

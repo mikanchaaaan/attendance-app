@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
 
-        // attendanceのファクトリ
+        // Dateの作成（過去6か月）
         $existingDates = Attendance::pluck('date')->toArray();
         $startDate = now()->subMonths(3);
         $endDate = now()->addMonths(3);
@@ -36,22 +36,11 @@ class DatabaseSeeder extends Seeder
 
         sort($dates);
 
-        $attendances = Attendance::factory()->count(180)->create([
+        $attendances = Attendance::factory(180)->withRest()->create([
             'user_id' => 2,
             'date' => function () use (&$dates) {
                 return array_shift($dates);
             }
         ]);
-
-        // Step 2: Restデータを作成
-        Rest::factory()->count(180)->create(function () {
-            $attendance = Attendance::inRandomOrder()->first();
-
-            return [
-                'attendance_id' => $attendance->id, // 必須
-                'user_id' => $attendance->user_id,
-            ];
-        });
-
     }
 }

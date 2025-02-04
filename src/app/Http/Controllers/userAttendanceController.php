@@ -88,7 +88,7 @@ class userAttendanceController extends Controller
     // 休憩中かどうかを判断
     private function isResting($attendance)
     {
-        return Rest::where('attendance_id', $attendance->id)->whereNull('rest_out_time')->exists();
+        return $attendance->rests()->whereNull('rest_out_time')->exists();
     }
 
     // 出勤の登録
@@ -127,11 +127,13 @@ class userAttendanceController extends Controller
         $currentTime = Carbon::now();
         $userId = auth()->id();
         $attendance = Attendance::whereDate('created_at', Carbon::today())->where('user_id', $userId)->first();
-        Rest::create([
-            'attendance_id' => $attendance->id,
-            'user_id' => $userId,
+        $rest = Rest::create([
             'rest_in_time' => $currentTime,
         ]);
+
+        // 中間テーブルに関係を登録
+        $attendance->rests()->attach($rest->id, ['created_at' => now(), 'updated_at' => now()]);
+
         return redirect()->back()->with('status', '休憩中');
     }
 
@@ -141,8 +143,14 @@ class userAttendanceController extends Controller
         $currentTime = Carbon::now();
         $userId = auth()->id();
         $attendance = Attendance::whereDate('created_at', Carbon::today())->where('user_id', $userId)->first();
-        $rest = Rest::where('attendance_id', $attendance->id)->whereNull('rest_out_time')->first();
-        $rest->update(['rest_out_time' => $currentTime]);
+
+        // 中間テーブル経由で紐づいている、休憩終了時間がまだ入っていない `Rest` を取得
+        $rest = $attendance->rests()->whereNull('rest_out_time')->first();
+
+        if ($rest) {
+            $rest->update(['rest_out_time' => $currentTime]);
+        }
+
         return redirect()->back()->with('status', '勤務中');
     }
 }

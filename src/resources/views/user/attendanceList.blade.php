@@ -30,7 +30,9 @@
 
 @section('content')
 <div class="container">
-    <h1>勤怠一覧</h1>
+    <div class="attendanceList__title">
+        <h1>勤怠一覧</h1>
+    </div>
 
     <div class="attendanceList__selectMonth">
         <a href="{{ url('/attendance/list') }}?month={{ $prevMonth }}" class="btn btn-primary">前月</a>
@@ -51,44 +53,37 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($attendances as $attendance)
+                @foreach ($dates as $date)
                     <tr>
-                        <td>@formatDate($attendance->date)</td>
-                        <td>@formatTime($attendance->clock_in_time)</td>
-                        <td>@formatTime($attendance->clock_out_time)</td>
+                        <td>@formatDate($date['date'])</td>
+                        <td>@formatTime($date['clock_in_time'])</td>
+                        <td>@formatTime($date['clock_out_time'])</td>
                         <td>
                             @php
                                 // 初期値を設定（対応するデータがない場合や勤務未完了時に備える）
-                                $totalRestTime = $restTimes[$attendance->id]->total_rest_time ?? 0;
+                                $totalRestTime = $restTimes[$date['date']]['total_rest_time'] ?? 0;
                             @endphp
 
-                            @if ($attendance->clock_out_time)
-                                @php
-                                    $hours = floor($totalRestTime / 60); // 時間部分
-                                    $minutes = $totalRestTime % 60; // 分部分
-                                @endphp
-                                {{ sprintf('%02d:%02d', $hours, $minutes) }}
+                            @if ($date['clock_out_time'])
+                                {{ $date['rest_time'] }}
                             @else
                                 - <!-- 勤務未完了時の表示 -->
                             @endif
                         </td>
+
                         <td>
-                            @if ($attendance->clock_out_time)
-                                @php
-                                    // 勤務時間を計算（退勤後のみ）
-                                    $start = \Illuminate\Support\Carbon::parse($attendance->clock_in_time);
-                                    $end = \Illuminate\Support\Carbon::parse($attendance->clock_out_time);
-                                    $workTime = $end->diffInMinutes($start) - $totalRestTime;
-                                    $workHours = floor($workTime / 60);
-                                    $workMinutes = $workTime % 60;
-                                @endphp
-                                {{ sprintf('%02d:%02d', $workHours, $workMinutes) }}
+                            @if ($date['clock_out_time'])
+                                {{ $date['work_time'] }}
                             @else
                                 - <!-- 退勤していない場合は表示しない -->
                             @endif
                         </td>
                         <td>
-                            <a href="/attendance/{{ $attendance->id }}">詳細</a>
+                            @if($date['attendance_id'])
+                                <a href="/attendance/{{ $date['attendance_id'] }}">詳細</a>
+                            @else
+                                -
+                            @endif
                         </td>
                     </tr>
                 @endforeach

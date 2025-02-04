@@ -34,37 +34,95 @@
         <h1>勤怠詳細</h1>
     </div>
 
-    <div class="attendance__detail--table">
-        <table>
-            <tbody>
-                <tr>
-                    <th>名前</th>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>日付</th>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>出勤・退勤</th>
-                    <td></td>
-                    <td>～</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>休憩</th>
-                    <td></td>
-                    <td>～</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>備考</th>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+    <form action="/attendance/request/" method="post">
+        @csrf
+        <div class="attendance__detail--table">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>名前</th>
+                        <td>{{ $name }}</td>
+                    </tr>
+                    <tr>
+                        <th>日付</th>
+                        <td>
+                            @if($isPending)
+                                <input type="text" class="requesting" name="clock_year" value="{{ $year }}" readonly>
+                            @else
+                                <input type="text" class="notRequesting" name="clock_year" value="{{ $year }}">
+                            @endif
+                        </td>
+                        <td>
+                            @if($isPending)
+                                <input type="text" class="requesting" name="clock_monthDay" value="{{ $monthDay }}" readonly>
+                            @else
+                                <input type="text" class="notRequesting" name="clock_monthDay" value="{{ $monthDay }}">
+                            @endif
+                        </td>
+                    </tr>
+                    <input type="hidden" name="date" value="{{ $attendance->date }}">
+
+                    <tr>
+                        <th>出勤・退勤</th>
+                        <td>
+                            @if($isPending)
+                                <input type="text" class="requesting" name="clock_in_time" value="@formatTime($attendanceRequest->requested_clock_in_time)" readonly>
+                            @else
+                                <input type="text" class="notRequesting" name="clock_in_time" value="@formatTime($attendance->clock_in_time)">
+                            @endif
+                        </td>
+                        <td>～</td>
+                        <td>
+                            @if($isPending)
+                                <input type="text" class="requesting" name="clock_out_time" value="@formatTime($attendanceRequest->requested_clock_out_time)" readonly>
+                            @else
+                                <input type="text" name="clock_out_time" value="@formatTime($attendance->clock_out_time)">
+                            @endif
+                        </td>
+                    </tr>
+                    @foreach($rests as $index => $rest)
+                        <tr>
+                            <th>休憩{{ $index == 0 ? '' : $index + 1 }}</th>
+                            <td>
+                                @if($isPending)
+                                    <input type="text" class="requesting" name="clock_in_time" value="@formatTime($attendanceRequest->rests[$index]->rest_in_time)" readonly>
+                                @else
+                                    <input type="text" class="notRequesting" name="rest_in_time[]" value="@formatTime($rest->rest_in_time)">
+                                @endif
+                            </td>
+                            <td>～</td>
+                            <td>
+                                @if($isPending)
+                                    <input type="text" class="requesting" name="clock_out_time" value="@formatTime($attendanceRequest->rests[$index]->rest_out_time)" readonly>
+                                @else
+                                    <input type="text" class="notRequesting" name="rest_out_time[]" value="@formatTime($rest->rest_out_time)">
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <th>備考</th>
+                        <td>
+                            @if($isPending)
+                                <textarea class="requesting" name="comment" value="" readonly></textarea>
+                            @else
+                                <textarea class="notRequesting" name="comment" value="" ></textarea>
+                            @endif
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @if($isPending)
+            <div class="pending-message">
+                <p>* 承認待ちのため修正はできません。</p>
+            </div>
+        @else
+            <div class="attendance__request--button">
+                <button>修正</button>
+            </div>
+        @endif
     </div>
-</div>
+</form>
 @endsection
 
