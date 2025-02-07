@@ -30,7 +30,7 @@ class userAttendanceController extends Controller
         $currentTimeView = Carbon::now()->format('H:i'); // 'HH:MM'
 
         // ログイン中のユーザの勤怠情報を取得
-        $attendance = Attendance::whereDate('created_at', $today)->where('user_id', $userId)->first();
+        $attendance = Attendance::whereDate('date', $today)->where('user_id', $userId)->first();
 
         // 初期化
         $isResting = $attendance ? $this->isResting($attendance) : false;
@@ -111,7 +111,7 @@ class userAttendanceController extends Controller
     {
         $currentTime = Carbon::now();
         $userId = auth()->id();
-        $attendance = Attendance::whereDate('created_at', Carbon::today())->where('user_id', $userId)->first();
+        $attendance = Attendance::whereDate('date', Carbon::today())->where('user_id', $userId)->first();
         $attendance->update([
             'clock_out_time' => $currentTime
         ]);
@@ -126,7 +126,7 @@ class userAttendanceController extends Controller
     {
         $currentTime = Carbon::now();
         $userId = auth()->id();
-        $attendance = Attendance::whereDate('created_at', Carbon::today())->where('user_id', $userId)->first();
+        $attendance = Attendance::whereDate('date', Carbon::today())->where('user_id', $userId)->first();
         $rest = Rest::create([
             'rest_in_time' => $currentTime,
         ]);
@@ -142,7 +142,7 @@ class userAttendanceController extends Controller
     {
         $currentTime = Carbon::now();
         $userId = auth()->id();
-        $attendance = Attendance::whereDate('created_at', Carbon::today())->where('user_id', $userId)->first();
+        $attendance = Attendance::whereDate('date', Carbon::today())->where('user_id', $userId)->first();
 
         // 中間テーブル経由で紐づいている、休憩終了時間がまだ入っていない `Rest` を取得
         $rest = $attendance->rests()->whereNull('rest_out_time')->first();

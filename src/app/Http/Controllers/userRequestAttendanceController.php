@@ -15,7 +15,7 @@ class userRequestAttendanceController extends Controller
     {
         $attendance = Attendance::findOrFail($attendance_id);
         $rests = $attendance->rests()->get();
-        $user = auth()->user();
+        $user = $attendance->user;
 
         $name = $user->name;
 
@@ -37,7 +37,7 @@ class userRequestAttendanceController extends Controller
             $isPending = false;
         }
 
-        return view('user.attendanceDetail', compact('name','year','monthDay','attendance','rests', 'isPending', 'attendanceRequest'));
+        return view('common.attendanceDetail', compact('name','year','monthDay','attendance','rests', 'isPending', 'attendanceRequest'));
     }
 
     // 勤怠申請

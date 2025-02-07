@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
 
         // Dateの作成（過去6か月）
         $existingDates = Attendance::pluck('date')->toArray();
-        $startDate = now()->subMonths(3);
-        $endDate = now()->addMonths(3);
+        $startDate = now()->subMonths(6);
+        $endDate = now();
 
         $dates = [];
         for ($date = $startDate; $date <= $endDate; $date->addDay()) {

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Rest;
-use Illuminate\Support\Facades\Log;
+
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Attendance>
