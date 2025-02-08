@@ -34,8 +34,10 @@
         <h1>勤怠詳細</h1>
     </div>
 
-    <form action="/attendance/request/" method="post">
-        @csrf
+    <form method="POST" action="{{ auth()->user()->role === 'admin' ? '/admin/attendance/update' : '/attendance/request' }}">
+    @csrf
+        <input type="hidden" name="id" value="{{ $attendance->id }}">
+
         <div class="attendance__detail--table">
             <table>
                 <tbody>
@@ -85,17 +87,17 @@
                             <th>休憩{{ $index == 0 ? '' : $index + 1 }}</th>
                             <td>
                                 @if($isPending)
-                                    <input type="text" class="requesting" name="clock_in_time" value="@formatTime($attendanceRequest->rests[$index]->rest_in_time)" readonly>
+                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_in_time)" readonly>
                                 @else
-                                    <input type="text" class="notRequesting" name="rest_in_time[]" value="@formatTime($rest->rest_in_time)">
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($rest->rest_in_time)">
                                 @endif
                             </td>
                             <td>～</td>
                             <td>
                                 @if($isPending)
-                                    <input type="text" class="requesting" name="clock_out_time" value="@formatTime($attendanceRequest->rests[$index]->rest_out_time)" readonly>
+                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_out_time)" readonly>
                                 @else
-                                    <input type="text" class="notRequesting" name="rest_out_time[]" value="@formatTime($rest->rest_out_time)">
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($rest->rest_out_time)">
                                 @endif
                             </td>
                         </tr>

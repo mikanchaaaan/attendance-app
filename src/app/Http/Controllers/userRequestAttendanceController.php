@@ -73,44 +73,47 @@ class userRequestAttendanceController extends Controller
             'comment' => $request->input('comment'),
         ]);
 
-        // 休憩時間の変更を中間テーブルで保存
-        $restInTimes = $request->input('rest_in_time', []);
-        $restOutTimes = $request->input('rest_out_time', []);
-
-        // 変更されていない場合は、元の `attendance` の `rest` を使用
-        $existingRests = $attendance->rests()->get();
-
-        // 変更された休憩時間を attendance_request_rest 中間テーブルに追加
-        for ($i = 0; $i < count($restInTimes); $i++) {
-            if (!empty($restInTimes[$i]) && !empty($restOutTimes[$i])) {
-                // 休憩時間のレコードを attendance_request_rest に追加
+        // 休憩時間の新規作成
+        if ($request->has('rests')) {
+            foreach ($request->input('rests') as $restData) {
+                // 新しい休憩時間を作成
                 $rest = Rest::create([
-                    'rest_in_time' => $restInTimes[$i],
-                    'rest_out_time' => $restOutTimes[$i],
+                    'rest_in_time' => $restData['rest_in_time'],
+                    'rest_out_time' => $restData['rest_out_time'],
                 ]);
 
-                // 中間テーブルに紐付け
+                // attendance_request_rest テーブルで紐づけ
                 $attendanceRequest->rests()->attach($rest->id);
             }
         }
+
         return redirect('/stamp_correction_request/list');
     }
 
     // 勤怠申請一覧の表示
-    public function requestView(Request $request) {
+    public function requestView(Request $request)
+    {
         $user = auth()->user();
         $tab = $request->query('tab', 'pending');
 
-        if($tab == 'pending') {
-            $attendanceRequests = AttendanceRequest::where('status', 'pending')
-                ->where('user_id', $user->id)
-                ->get();
-        } elseif ($tab == 'approved') {
-            $attendanceRequests = AttendanceRequest::where('status', 'approved')
-                ->where('user_id', $user->id)
-                ->get();
+        // 管理者なら全員分、一般ユーザなら自分の申請のみ取得
+        if ($user->role === 'admin') {
+            if ($tab == 'pending') {
+                $attendanceRequests = AttendanceRequest::where('status', 'pending')->get();
+            } elseif ($tab == 'approved') {
+                $attendanceRequests = AttendanceRequest::where('status', 'approved')->get();
+            }
+        } else {
+            if ($tab == 'pending') {
+                $attendanceRequests = AttendanceRequest::where('status', 'pending')
+                    ->where('user_id', $user->id)
+                    ->get();
+            } elseif ($tab == 'approved') {
+                $attendanceRequests = AttendanceRequest::where('status', 'approved')
+                    ->where('user_id', $user->id)
+                    ->get();
+            }
         }
-
-        return view('user.attendanceRequest', compact('tab', 'attendanceRequests'));
+        return view('common.attendanceRequest', compact('tab', 'attendanceRequests'));
     }
 }
