@@ -1,0 +1,95 @@
+@extends('layouts.app')
+
+@section('page-move')
+    <div class="header__button">
+        <div class="header__button--attendance">
+            <a href="/admin/attendance/list" class="goto">勤怠一覧</a>
+        </div>
+        <div class="header__button--attendance-list">
+            <a href="/admin/staff/list" class="goto">スタッフ一覧</a>
+        </div>
+        <div class="header__button--attendance-request">
+            <a href="/stamp_correction_request/list" class="goto">申請一覧</a>
+        </div>
+        @auth
+            <!-- ログインしている場合 -->
+            <div class="header__button--logout">
+                <form action="/admin/logout" class="logout-form" method="post">
+                    @csrf
+                    <button class="logout-button">ログアウト</button>
+                </form>
+            </div>
+        @else
+            <!-- ログインしていない場合 -->
+            <div class="header__button--login">
+                <a href="/login" class="login-button">ログイン</a>
+            </div>
+        @endauth
+    </div>
+@endsection
+
+@section('content')
+    <div class="staffList__title">
+        <h1>{{ $user->name }}さんの勤怠</h1>
+    </div>
+
+    <div class="staffAttendance__selectMonth">
+        <a href="{{ url('/admin/attendance/staff/' . $user->id) }}?month={{ $prevMonth }}" class="btn btn-primary">前月</a>
+        <span class="this-month">{{ \Carbon\Carbon::parse($currentMonth)->format('Y/m') }}</span>
+        <a href="{{ url('/admin/attendance/staff/' . $user->id) }}?month={{ $nextMonth }}" class="btn btn-primary">後月</a>
+    </div>
+
+    <div class="staffAttendance__content">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>出勤</th>
+                    <th>退勤</th>
+                    <th>休憩</th>
+                    <th>合計</th>
+                    <th>詳細</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($dates as $date)
+                    <tr>
+                        <td>@formatDate($date['date'])</td>
+                        <td>@formatTime($date['clock_in_time'])</td>
+                        <td>@formatTime($date['clock_out_time'])</td>
+                        <td>
+                            @php
+                                // 初期値を設定（対応するデータがない場合や勤務未完了時に備える）
+                                $totalRestTime = $restTimes[$date['date']]['total_rest_time'] ?? 0;
+                            @endphp
+
+                            @if ($date['clock_out_time'])
+                                {{ $date['rest_time'] }}
+                            @else
+                                - <!-- 勤務未完了時の表示 -->
+                            @endif
+                        </td>
+
+                        <td>
+                            @if ($date['clock_out_time'])
+                                {{ $date['work_time'] }}
+                            @else
+                                - <!-- 退勤していない場合は表示しない -->
+                            @endif
+                        </td>
+                        <td>
+                            @if($date['attendance_id'])
+                                <a href="/attendance/{{ $date['attendance_id'] }}">詳細</a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    <div class="csv-report__button">
+        <button>CSV出力</button>
+    </div>
+@endsection

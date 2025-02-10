@@ -7,8 +7,7 @@ use App\Http\Controllers\userRequestAttendanceController;
 use App\Http\Controllers\adminAttendanceListController;
 use App\Http\Controllers\adminRequestAttendanceController;
 use App\Http\Controllers\adminAuthenticatedController;
-use App\Http\Controllers\adminStuffManagementController;
-use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\adminStaffManagementController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 Route::middleware(['auth:web,admin'])->group(function () {
@@ -63,5 +62,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/attendance/approve', [adminRequestAttendanceController::class, 'attendanceRequestApprove']);
 
     // スタッフ一覧表示
-    Route::get('/admin/stuff/list', [adminStuffManagementController::class, 'viewStaffList']);
+    Route::get('/admin/staff/list', [adminStaffManagementController::class, 'viewStaffList']);
+
+    // スタッフ別勤怠一覧表示
+    Route::get('/admin/attendance/staff/{user_id}', [adminStaffManagementController::class, 'viewStaffAttendance']);
 });
