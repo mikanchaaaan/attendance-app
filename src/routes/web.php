@@ -6,10 +6,12 @@ use App\Http\Controllers\userAttendanceListController;
 use App\Http\Controllers\userRequestAttendanceController;
 use App\Http\Controllers\adminAttendanceListController;
 use App\Http\Controllers\adminRequestAttendanceController;
-use App\Http\Controllers\CustomAuthenticatedSessionController;
+use App\Http\Controllers\adminAuthenticatedController;
+use App\Http\Controllers\adminStuffManagementController;
+use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web,admin'])->group(function () {
     // 出勤登録画面の表示
     Route::get('/attendance', [userAttendanceController::class, 'attendance']);
 
@@ -36,8 +38,8 @@ Route::middleware(['auth'])->group(function () {
 
     // 勤怠申請一覧の表示
     Route::get('/stamp_correction_request/list', [userRequestAttendanceController::class, 'requestView']);
-
 });
+
 // 管理者ログインページの表示
 Route::get('/admin/login', function () {
     return view('admin.login');
@@ -47,13 +49,19 @@ Route::get('/admin/login', function () {
 Route::post('/admin/login', [AuthenticatedSessionController::class, 'store']);
 
 // 管理者ログアウト
-Route::post('/admin/logout', [CustomAuthenticatedSessionController::class, 'destroy']);
+Route::post('/admin/logout', [adminAuthenticatedController::class, 'destroy']);
 
 // 管理者用ページ (AdminMiddleware 適用)
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth:admin'])->group(function () {
     // 勤怠一覧表示
     Route::get('/admin/attendance/list', [adminAttendanceListController::class, 'adminListView']);
 
     // 勤怠修正（申請なしの修正）
     Route::post('/admin/attendance/update', [adminRequestAttendanceController::class, 'adminRequestUpdate']);
+
+    // 勤怠承認
+    Route::post('/admin/attendance/approve', [adminRequestAttendanceController::class, 'attendanceRequestApprove']);
+
+    // スタッフ一覧表示
+    Route::get('/admin/stuff/list', [adminStuffManagementController::class, 'viewStaffList']);
 });

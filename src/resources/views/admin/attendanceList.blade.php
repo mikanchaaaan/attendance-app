@@ -30,6 +30,16 @@
 
 @section('content')
 
+<p>現在のガード: {{ Auth::getDefaultDriver() }}</p>
+
+@if(Auth::guard('admin')->check())
+    <p>管理者としてログイン中</p>
+@elseif(Auth::guard('web')->check())
+    <p>一般ユーザーとしてログイン中</p>
+@else
+    <p>未ログイン</p>
+@endif
+
     <div class="attendanceList__title">
         <h1>{{ \Carbon\Carbon::parse($date)->format('Y年n月j日') }}の勤怠</h1>
     </div>

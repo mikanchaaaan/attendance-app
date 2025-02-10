@@ -20,6 +20,6 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect()->route('attendance'); // 一般ユーザは /attendance にリダイレクト
+        return redirect('/attendance'); // 一般ユーザは /attendance にリダイレクト
     }
 }

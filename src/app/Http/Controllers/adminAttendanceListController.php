@@ -11,7 +11,7 @@ class adminAttendanceListController extends Controller
     // 管理者用勤怠一覧ページの表示
     public function adminListView(Request $request){
 
-        $user = auth()->user();
+        $user = auth('admin')->user();
 
         // クエリパラメータがなければ今日の日付をデフォルトにする
         $date = $request->query('date', Carbon::today()->format('Y-m-d'));

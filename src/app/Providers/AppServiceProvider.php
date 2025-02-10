@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Carbonのロケールを日本語に設定
-        \Carbon\Carbon::setLocale('ja');
+        Carbon::setLocale('ja');
 
         // @formatTimeでH:iの形式で時間を表示できるようにする
         Blade::directive('formatTime', function ($expression) {

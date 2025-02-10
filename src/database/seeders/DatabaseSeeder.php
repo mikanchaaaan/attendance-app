@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Rest;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
@@ -37,7 +38,7 @@ class DatabaseSeeder extends Seeder
         sort($dates);
 
         $attendances = Attendance::factory(180)->withRest()->create([
-            'user_id' => 2,
+            'user_id' => 1,
             'date' => function () use (&$dates) {
                 return array_shift($dates);
             }

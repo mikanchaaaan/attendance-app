@@ -24,6 +24,14 @@ class User extends Authenticatable
         'role'
     ];
 
+    // 管理者かどうかを判定するメソッド
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    protected $guard = 'web';  // web ガードを使用
+
     /**
      * The attributes that should be hidden for serialization.
      *

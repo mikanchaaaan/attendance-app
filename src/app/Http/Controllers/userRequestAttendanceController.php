@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\AttendanceRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class userRequestAttendanceController extends Controller
 {
@@ -97,7 +98,7 @@ class userRequestAttendanceController extends Controller
         $tab = $request->query('tab', 'pending');
 
         // 管理者なら全員分、一般ユーザなら自分の申請のみ取得
-        if ($user->role === 'admin') {
+        if((Auth::guard('admin')->check())) {
             if ($tab == 'pending') {
                 $attendanceRequests = AttendanceRequest::where('status', 'pending')->get();
             } elseif ($tab == 'approved') {

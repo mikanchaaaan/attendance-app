@@ -3,38 +3,70 @@
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
-            <a href="/attendance" class="goto">勤怠</a>
+            @if(Auth::guard('admin')->check())
+                <a href="/admin/attendance/list" class="goto">勤怠一覧</a>
+            @else
+                <a href="/attendance" class="goto">勤怠</a>
+            @endif
         </div>
         <div class="header__button--attendance-list">
-            <a href="/attendance/list" class="goto">勤怠一覧</a>
+            @if(Auth::guard('admin')->check())
+                <a href="/admin/staff/list" class="goto">スタッフ一覧</a>
+            @else
+                <a href="/attendance/list" class="goto">勤怠一覧</a>
+            @endif
         </div>
         <div class="header__button--attendance-request">
-            <a href="/stamp_correction_request/list" class="goto">申請</a>
+            @if(Auth::guard('admin')->check())
+                <a href="/stamp_correction_request/list" class="goto">申請一覧</a>
+            @else
+                <a href="/stamp_correction_request/list" class="goto">申請</a>
+            @endif
         </div>
         @auth
             <!-- ログインしている場合 -->
             <div class="header__button--logout">
-                <form action="/logout" class="logout-form" method="post">
-                    @csrf
-                    <button class="logout-button">ログアウト</button>
-                </form>
-            </div>
-        @else
-            <!-- ログインしていない場合 -->
-            <div class="header__button--login">
-                <a href="/login" class="login-button">ログイン</a>
+                @if(Auth::guard('admin')->check())
+                    <form action="/admin/logout" class="logout-form" method="post">
+                        @csrf
+                        <button class="logout-button">ログアウト</button>
+                    </form>
+                @else
+                    <form action="/logout" class="logout-form" method="post">
+                        @csrf
+                        <button class="logout-button">ログアウト</button>
+                    </form>
+                @endif
             </div>
         @endauth
     </div>
 @endsection
 
 @section('content')
+<p>現在のガード: {{ Auth::getDefaultDriver() }}</p>
+
+@if(Auth::guard('admin')->check())
+    <p>管理者としてログイン中</p>
+@elseif(Auth::guard('web')->check())
+    <p>一般ユーザーとしてログイン中</p>
+@else
+    <p>未ログイン</p>
+@endif
+
 <div class="container">
     <div class="attendance__detail--title">
         <h1>勤怠詳細</h1>
     </div>
 
-    <form method="POST" action="{{ auth()->user()->role === 'admin' ? '/admin/attendance/update' : '/attendance/request' }}">
+    <form method="POST" action="
+        @if($isPending && (Auth::guard('admin')->check()))
+            /admin/attendance/approve?id={{ $attendance->id }}
+        @elseif(!$isPending && (Auth::guard('admin')->check()))
+            /admin/attendance/update
+        @else
+            /attendance/request
+        @endif
+    ">
     @csrf
         <input type="hidden" name="id" value="{{ $attendance->id }}">
 
@@ -106,24 +138,32 @@
                         <th>備考</th>
                         <td>
                             @if($isPending)
-                                <textarea class="requesting" name="comment" value="" readonly></textarea>
+                                <textarea class="requesting" name="comment" readonly>{{ ($attendanceRequest->comment) }}</textarea>
                             @else
-                                <textarea class="notRequesting" name="comment" value="" ></textarea>
+                                <textarea class="notRequesting" name="comment"></textarea>
                             @endif
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        @if($isPending)
-            <div class="pending-message">
-                <p>* 承認待ちのため修正はできません。</p>
-            </div>
-        @else
-            <div class="attendance__request--button">
-                <button>修正</button>
-            </div>
-        @endif
+        {{-- ボタンの表示 --}}
+        <div class="attendance__request--button">
+            @if($isPending && (Auth::guard('admin')->check()))
+                <button type="submit" class="btn btn-success">承認</button>
+            @elseif($attendanceRequest && $attendanceRequest->status === 'approved')
+            <!-- 承認済みの場合 -->
+                <button class="btn btn-secondary" disabled>承認済み</button>
+            @elseif($isPending)
+                <div class="pending-message">
+                    <p>* 承認待ちのため修正はできません。</p>
+                </div>
+            @elseif((Auth::guard('admin')->check()))
+                <button type="submit" class="btn btn-primary">修正</button>
+            @else
+                <button type="submit" class="btn btn-warning">申請</button>
+            @endif
+        </div>
     </div>
 </form>
 @endsection

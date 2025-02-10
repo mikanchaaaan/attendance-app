@@ -9,6 +9,7 @@ use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Actions\Fortify\LoginResponse;
 use App\Actions\Fortify\LogoutResponse;
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
@@ -32,86 +34,102 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(
-            \Laravel\Fortify\Contracts\RegisterResponse::class,
-            \App\Actions\Fortify\RegisterResponse::class
-        );
-
         $this->app->singleton(LogoutResponseContract::class, LogoutResponse::class);
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
+        // ユーザー登録の設定
         Fortify::createUsersUsing(CreateNewUser::class);
 
-        Fortify::registerView(function() {
+        // 登録ページ
+        Fortify::registerView(function () {
             return view('user.register');
         });
 
-        // Fortifyの標準機能にカスタムLoginResponseを提供
-        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
-
-        // 一般ユーザ用のログインページを表示
+        // **ログインページの表示を分ける**
         Fortify::loginView(function () {
-            // /admin/login から来た場合、管理者用のログインページを返す
-            if (request()->path() === 'admin/login') {
-                return view('admin.login');  // 管理者用ログインページ
-            }
-
-            return view('user.login');  // 一般ユーザ用ログインページ
+            Log::info('Current request URL:', [
+                'path' => request()->path(),
+                'full_url' => request()->fullUrl(),
+            ]);
+            return request()->is('admin/login') ? view('admin.login') : view('user.login');
         });
 
+        // ログインレートリミット
         RateLimiter::for('login', function (Request $request) {
-            $email = (string) $request->email;
-
-            return Limit::perMinute(10)->by($email . $request->ip());
+            return Limit::perMinute(10)->by($request->email . $request->ip());
         });
 
-        // Fortifyのカスタム認証ロジック
-        Fortify::authenticateUsing(function (Request $request) {
-            Log::info('authenticateUsing START:', [
-                'path' => $request->path(),
-                'full_url' => $request->fullUrl(),
-                'email' => $request->email ?? 'No Email',
+
+        // カスタム認証ロジックを設定
+        Fortify::authenticateUsing(function ($request) {
+            Log::info('Current request URL:', [
+                'path' => request()->path(),
+                'full_url' => request()->fullUrl(),
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            // ログインURLが '/admin/login' の場合
+            if ($request->is('admin/login')) {
+                // 管理者の認証
+                $admin = Admin::where('email', $request->email)->first();
+                if ($admin && Hash::check($request->password, $admin->password)) {
+                    // 管理者ガードでログイン
+                    Auth::guard('admin')->login($admin);
 
-            if (!$user) {
-                Log::info('User not found:', ['email' => $request->email]);
-                return null;
-            }
+                    Log::info('Admin session', ['cookie' => env('SESSION_COOKIE_ADMIN', 'admin_session')]);
+                    Config::set('session.table', env('SESSION_TABLE_ADMIN', 'sessions_admin'));
+                    Config::set('session.cookie', env('SESSION_COOKIE_ADMIN', 'admin_session'));
 
-            if (!Hash::check($request->password, $user->password)) {
-                Log::info('Password mismatch:', ['email' => $request->email]);
-                return null;
-            }
+                    session(['auth_guard' => 'admin']);  // 管理者ガードのセッション情報
 
-            $userRole = $user->role ?? 'user';
-
-            Log::info('User authenticated:', [
-                'email' => $request->email,
-                'role' => $userRole,
-            ]);
-
-            // `/admin/login` なら管理者のみログイン許可
-            if (strpos($request->fullUrl(), '/admin/login') !== false) {
-                Session::put('login_from_admin', true); // 管理者ログインページからのログイン
-                if ($userRole !== 'admin') {
-                    Log::info('Rejecting non-admin login attempt:', [
-                        'email' => $request->email,
-                        'role' => $userRole,
+                    Log::info('LoginResponse1', [
+                        'auth_guard' => session('auth_guard'),
+                        'is_admin' => Auth::guard('admin')->check(),
+                        'is_user' => Auth::guard('web')->check(),
                     ]);
-                    return null; // 一般ユーザーはログイン不可
+
+                    Log::info('Session Settings_admin', [
+                        'table' => Config::get('session.table'),
+                        'cookie' => Config::get('session.cookie')
+                    ]);
+
+                    Session::save();
+
+                    return $admin; // 認証成功
                 }
-            } else {
-                Session::put('login_from_admin', false); // 通常ログイン
             }
 
-            return $user;
+            if ($request->is('login')) {
+                $user = User::where('email', $request->email)->first();
+                if ($user && Hash::check($request->password, $user->password)) {
+                    // 一般ユーザーガードでログイン
+                    Auth::guard('web')->login($user);
+
+                    Log::info('User session', ['cookie' => env('SESSION_COOKIE_USER', 'user_session')]);
+                    Config::set('session.table', env('SESSION_TABLE', 'sessions'));
+                    Config::set('session.cookie', env('SESSION_COOKIE_USER', 'user_session'));
+
+                    session(['auth_guard' => 'web']);
+
+                    Log::info('LoginResponse2', [
+                        'auth_guard' => session('auth_guard'),
+                        'is_admin' => Auth::guard('admin')->check(),
+                        'is_user' => Auth::guard('web')->check(),
+                    ]);
+
+                    Log::info('Session Settings_user', [
+                        'table' => Config::get('session.table'),
+                        'cookie' => Config::get('session.cookie')
+                    ]);
+
+                    Session::save();
+
+                    return $user; // 認証成功
+                }
+            }
+            return null; // 認証失敗
         });
     }
 }

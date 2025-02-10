@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class UserSeeder extends Seeder
 {
@@ -18,9 +19,8 @@ class UserSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => bcrypt('p@ssw0rd!1234'),
-            'role' => 'admin'
         ];
-        DB::table('users')->insert($param);
+        DB::table('admins')->insert($param);
 
         $param = [
             'name' => 'Test User',
