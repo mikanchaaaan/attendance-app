@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\AttendanceRequest;
+use App\Http\Requests\AttendanceRequestForm;
 
 class adminRequestAttendanceController extends Controller
 {
     // 勤怠修正（管理者用）
-    public function adminRequestUpdate(Request $request)
+    public function adminRequestUpdate(AttendanceRequestForm $request)
     {
         // 勤怠データの取得
         $attendance = Attendance::findOrFail($request->input('id'));
@@ -94,5 +95,37 @@ class adminRequestAttendanceController extends Controller
         $attendanceRequest->update(['status' => 'approved']);
 
         return redirect('/stamp_correction_request/list?tab=approved');
+    }
+
+    // 勤怠承認画面の表示
+    public function adminRequestView($attendance_id)
+    {
+        $attendance = Attendance::findOrFail($attendance_id);
+        $rests = $attendance->rests()->get();
+        $user = $attendance->user;
+
+        $name = $user->name;
+
+        // 承認待ちの申請があるか確認
+        $attendanceRequest = AttendanceRequest::where('attendance_id', $attendance->id)
+        ->where('status', 'pending')
+        ->first();
+
+        if ($attendanceRequest) {
+            $date = $attendanceRequest->requested_clock_date;
+            $year = $attendanceRequest->requested_clock_date->format('Y') . '年';
+            $monthDay = $attendanceRequest->requested_clock_date->format('n') . '月' . $attendanceRequest->requested_clock_date->format('j') . '日';
+            $isPending = true;
+            $status = $attendanceRequest->status;
+        } else {
+            $date = $attendance->date;
+            $dateObj = new \DateTime($date);
+            $year = $dateObj->format('Y') . '年';
+            $monthDay = $dateObj->format('n') . '月' . $dateObj->format('j') . '日';  // X月X日
+            $isPending = false;
+            $status = 'approved';
+        }
+
+        return view('admin.attendanceApprove', compact('name', 'year', 'monthDay', 'attendance', 'rests', 'isPending', 'status', 'attendanceRequest'));
     }
 }

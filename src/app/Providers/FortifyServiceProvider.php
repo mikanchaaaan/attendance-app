@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
@@ -81,6 +82,7 @@ class FortifyServiceProvider extends ServiceProvider
                     Log::info('Admin session', ['cookie' => env('SESSION_COOKIE_ADMIN', 'admin_session')]);
                     Config::set('session.table', env('SESSION_TABLE_ADMIN', 'sessions_admin'));
                     Config::set('session.cookie', env('SESSION_COOKIE_ADMIN', 'admin_session'));
+                    $cookie = Cookie::make(env('SESSION_COOKIE_ADMIN', 'admin_session'), 'some_value', 120, '/', null, false, true);
 
                     session(['auth_guard' => 'admin']);  // 管理者ガードのセッション情報
 

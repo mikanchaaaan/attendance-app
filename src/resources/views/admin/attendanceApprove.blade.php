@@ -1,45 +1,31 @@
 @extends('layouts.app')
 
 @section('page-move')
-    <div class="header__button">
-        <div class="header__button--attendance">
-            @if(Auth::guard('admin')->check())
-                <a href="/admin/attendance/list" class="goto">勤怠一覧</a>
-            @else
-                <a href="/attendance" class="goto">勤怠</a>
-            @endif
-        </div>
-        <div class="header__button--attendance-list">
-            @if(Auth::guard('admin')->check())
-                <a href="/admin/staff/list" class="goto">スタッフ一覧</a>
-            @else
-                <a href="/attendance/list" class="goto">勤怠一覧</a>
-            @endif
-        </div>
-        <div class="header__button--attendance-request">
-            @if(Auth::guard('admin')->check())
-                <a href="/stamp_correction_request/list" class="goto">申請一覧</a>
-            @else
-                <a href="/stamp_correction_request/list" class="goto">申請</a>
-            @endif
-        </div>
-        @auth
-            <!-- ログインしている場合 -->
-            <div class="header__button--logout">
-                @if(Auth::guard('admin')->check())
-                    <form action="/admin/logout" class="logout-form" method="post">
-                        @csrf
-                        <button class="logout-button">ログアウト</button>
-                    </form>
-                @else
-                    <form action="/logout" class="logout-form" method="post">
-                        @csrf
-                        <button class="logout-button">ログアウト</button>
-                    </form>
-                @endif
-            </div>
-        @endauth
+<div class="header__button">
+    <div class="header__button--attendance">
+        <a href="/admin/attendance/list" class="goto">勤怠一覧</a>
     </div>
+    <div class="header__button--attendance-list">
+        <a href="/admin/staff/list" class="goto">スタッフ一覧</a>
+    </div>
+    <div class="header__button--attendance-request">
+        <a href="/stamp_correction_request/list" class="goto">申請一覧</a>
+    </div>
+    @auth
+    <!-- ログインしている場合 -->
+    <div class="header__button--logout">
+        <form action="/admin/logout" class="logout-form" method="post">
+            @csrf
+            <button class="logout-button">ログアウト</button>
+        </form>
+    </div>
+    @else
+    <!-- ログインしていない場合 -->
+    <div class="header__button--login">
+        <a href="/login" class="login-button">ログイン</a>
+    </div>
+    @endauth
+</div>
 @endsection
 
 @section('content')
@@ -58,13 +44,7 @@
         <h1>勤怠詳細</h1>
     </div>
 
-    <form method="POST" action="
-        @if(Auth::guard('admin')->check()))
-            /admin/attendance/update
-        @else
-            /attendance/request
-        @endif
-    ">
+    <form method="POST" action="/admin/attendance/approve?id={{ $attendance->id }}">
     @csrf
         <input type="hidden" name="id" value="{{ $attendance->id }}">
 
@@ -112,16 +92,6 @@
                             @endif
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="4">
-                            <!-- エラーメッセージの表示部分 -->
-                            <div class="form__error">
-                                @if ($errors->has('clock_in_time'))
-                                    {{ $errors->first('clock_in_time') }}
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
                     @foreach($rests as $index => $rest)
                         <tr>
                             <th>休憩{{ $index == 0 ? '' : $index + 1 }}</th>
@@ -143,16 +113,6 @@
                         </tr>
                     @endforeach
                     <tr>
-                        <td colspan="4">
-                            <!-- エラーメッセージの表示部分 -->
-                            <div class="form__error">
-                                @foreach ($errors->get('rests.*.rest_in_time') as $error)
-                                    <p>{{ $error[0] }}</p> {{-- 配列の最初のメッセージを表示 --}}
-                                @endforeach
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
                         <th>備考</th>
                         <td>
                             @if($isPending)
@@ -162,33 +122,17 @@
                             @endif
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="4">
-                            <!-- エラーメッセージの表示部分 -->
-                            <div class="form__error">
-                                @if ($errors->has('comment'))
-                                    {{ $errors->first('comment') }}
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
-
         {{-- ボタンの表示 --}}
         <div class="attendance__request--button">
-            @if($isPending)
-                <div class="pending-message">
-                    <p>* 承認待ちのため修正はできません。</p>
-                </div>
-            @elseif((Auth::guard('admin')->check()))
-                <button type="submit" class="btn btn-primary">修正</button>
+            @if($status === 'approved')
+                <button type="submit" class="btn btn-success" disabled>承認済み</button>
             @else
-                <button type="submit" class="btn btn-warning">申請</button>
+                <button class="btn btn-secondary">承認</button>
             @endif
         </div>
     </div>
 </form>
 @endsection
-

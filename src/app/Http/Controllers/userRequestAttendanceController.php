@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\AttendanceRequest;
+use App\Http\Requests\AttendanceRequestForm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,7 +43,7 @@ class userRequestAttendanceController extends Controller
     }
 
     // 勤怠申請
-    public function attendanceRequest(Request $request)
+    public function attendanceRequest(AttendanceRequestForm $request)
     {
         $user = auth()->user();
 

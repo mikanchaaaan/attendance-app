@@ -90,7 +90,13 @@
                         <td>{{ $attendanceRequest->requested_clock_date->format('Y/m/d') }}</td>
                         <td>{{ $attendanceRequest->comment }}</td>
                         <td>{{ $attendanceRequest->created_at->format('Y/m/d') }}</td>
-                        <td><a href="/attendance/{{ $attendanceRequest['attendance_id'] }}">詳細</a></td>
+                        <td>
+                            @if(Auth::guard('admin')->check())
+                                <a href="/stamp_correction_request/approve/{{$attendanceRequest['attendance_id']}}">詳細</a>
+                            @else
+                                <a href="/attendance/{{ $attendanceRequest['attendance_id'] }}">詳細</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

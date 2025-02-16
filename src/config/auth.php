@@ -43,7 +43,6 @@ return [
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
-            'cookie' => env('SESSION_COOKIE_ADMIN', 'admin_session'), // 管理者用のセッション名
         ],
     ],
 

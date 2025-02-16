@@ -14,12 +14,7 @@ class Rest extends Model
         'rest_out_time',
     ];
 
-    public function attendance()
-    {
-        return $this->belongsTo(Attendance::class);
-    }
-
-    public function user()
+    public function attendanceRests()
     {
         return $this->belongsToMany(Attendance::class, 'attendance_rest', 'rest_id', 'attendance_id');
     }

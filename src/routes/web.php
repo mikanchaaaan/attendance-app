@@ -58,6 +58,9 @@ Route::middleware(['auth:admin'])->group(function () {
     // 勤怠修正（申請なしの修正）
     Route::post('/admin/attendance/update', [adminRequestAttendanceController::class, 'adminRequestUpdate']);
 
+    // 修正申請承認画面の表示
+    Route::get('/stamp_correction_request/approve/{attendanceRequest_id}', [adminRequestAttendanceController::class, 'adminRequestView']);
+
     // 勤怠承認
     Route::post('/admin/attendance/approve', [adminRequestAttendanceController::class, 'attendanceRequestApprove']);
 
