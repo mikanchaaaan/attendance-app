@@ -1,5 +1,6 @@
 body {
     font-family: "Inter";
+    background-color: #f0f0f0;
 }
 
 .header {
@@ -32,4 +33,13 @@ body {
 
 .goto, .login-button, .logout-button {
     margin-left: 10px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 24px;
+}
+
+.logout-button {
+    background: none;
+    border:none;
+    cursor: pointer;
 }

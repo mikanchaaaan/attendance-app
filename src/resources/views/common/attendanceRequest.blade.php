@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/attendancerequest.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -43,16 +47,6 @@
 @endsection
 
 @section('content')
-
-<p>現在のガード: {{ Auth::getDefaultDriver() }}</p>
-
-@if(Auth::guard('admin')->check())
-    <p>管理者としてログイン中</p>
-@elseif(Auth::guard('web')->check())
-    <p>一般ユーザーとしてログイン中</p>
-@else
-    <p>未ログイン</p>
-@endif
 
 <div class="container">
     <div class="attendanceList__title">

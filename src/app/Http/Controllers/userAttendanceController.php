@@ -26,7 +26,7 @@ class userAttendanceController extends Controller
         $currentTime = Carbon::now();
 
         // viewへの表示用に表記を変更
-        $todayView = \Carbon\Carbon::now()->isoFormat('YYYY年MM月DD日（dd）');
+        $todayView = Carbon::now()->isoFormat('YYYY年M月D日（dd）');
         $currentTimeView = Carbon::now()->format('H:i'); // 'HH:MM'
 
         // ログイン中のユーザの勤怠情報を取得
@@ -116,7 +116,7 @@ class userAttendanceController extends Controller
             'clock_out_time' => $currentTime
         ]);
 
-        session()->flash('status_message', 'お疲れ様でした');
+        session()->flash('status_message', 'お疲れ様でした。');
 
         return redirect('/attendance');
     }

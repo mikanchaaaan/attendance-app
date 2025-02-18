@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/user_attendancelist.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -35,9 +39,19 @@
     </div>
 
     <div class="attendanceList__selectMonth">
-        <a href="{{ url('/attendance/list') }}?month={{ $prevMonth }}" class="btn btn-primary">前月</a>
-        <span class="this-month">{{ \Carbon\Carbon::parse($currentMonth)->format('Y/m') }}</span>
-        <a href="{{ url('/attendance/list') }}?month={{ $nextMonth }}" class="btn btn-primary">後月</a>
+        <div class="attendanceList__selectMonth--last">
+            <img src="{{ asset('img/arrow.png')}}" alt="arrow_left" class="arrow-left">
+            <a href="{{ url('/attendance/list') }}?month={{ $prevMonth }}" class="btn btn-primary">前月</a>
+        </div>
+        <div class="attendanceList__selectMonth--date">
+            <img src="{{asset('img/calendar.png') }}" alt="calendar" class="calendar-img">
+            <span class="this-month">{{ \Carbon\Carbon::parse($currentMonth)->format('Y/m') }}</span>
+        </div>
+        <div class="attendanceList__selectMonth--next">
+            <a href="{{ url('/attendance/list') }}?month={{ $nextMonth }}" class="btn btn-primary">後月</a>
+            <img src="{{ asset('img/arrow.png')}}" alt="arrow_right" class="arrow-right">
+        </div>
+
     </div>
 
     <div class="attendanceList__content">

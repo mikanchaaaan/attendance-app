@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/user_attendance.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -44,33 +48,33 @@
         @if ($showCheckInButton && !session('status_message'))
             <form method="POST" action="/attendance/clockIn">
             @csrf
-                <button type="submit" class="btn btn-primary">出勤</button>
+                <button type="submit" class="btn btn-clock_in">出勤</button>
             </form>
         @endif
 
         @if ($showCheckOutButton)
             <form method="POST" action="/attendance/clockOut">
             @csrf
-                <button type="submit" class="btn btn-danger">退勤</button>
+                <button type="submit" class="btn btn-clock_out">退勤</button>
             </form>
         @endif
 
         @if ($showRestInButton)
             <form method="POST" action="/attendance/restIn">
             @csrf
-                <button type="submit" class="btn btn-warning">休憩入</button>
+                <button type="submit" class="btn btn-rest_in">休憩入</button>
             </form>
         @endif
 
         @if ($showRestOutButton)
             <form method="POST" action="/attendance/restOut">
                 @csrf
-                <button type="submit" class="btn btn-success">休憩戻</button>
+                <button type="submit" class="btn btn-rest_out">休憩戻</button>
             </form>
         @endif
 
         @if(session('status_message'))
-            <div class="alert alert-info">
+            <div class="clockOut-message">
             {{ session('status_message') }}
             </div>
         @endif

@@ -1,0 +1,102 @@
+/* コンテナ全体 */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* タイトル部分 */
+.attendanceList__title h1 {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    border-left: 5px solid black;
+    padding-left: 10px;
+}
+
+/* 月の選択ボタン */
+.attendanceList__selectMonth {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    height: 60px;
+    padding: 10px;
+    gap: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+.btn-primary {
+    color: #737373;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.arrow-left, .arrow-right {
+    width: 20px;
+    height: 15px;
+    opacity: 0.3;
+}
+
+.arrow-right {
+    transform: rotate(180deg);
+}
+
+.this-month {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.calendar-img {
+    width: 25px;
+    height: 25px;
+}
+
+.attendanceList__selectMonth--last, .attendanceList__selectMonth--next {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* テーブルデザイン */
+.attendanceList__content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: #737373;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+}
+
+.attendanceList__content th,
+.attendanceList__content td {
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #e1e1e1;
+    border-left: none;
+    border-right: none;
+    border-radius: 10px;
+}
+
+.attendanceList__content th {
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #737373;
+    font-size: 16px;
+    border-top: none;
+}
+
+.attendanceList__content td a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.attendanceList__content td a:hover {
+    text-decoration: underline;
+}

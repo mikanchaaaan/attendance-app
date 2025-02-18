@@ -1,0 +1,79 @@
+.attendance__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 中央寄せ */
+    justify-content: center;
+    margin-top: 100px;
+}
+
+.attendance__content--status {
+    display: flex;
+    align-items: center;
+    justify-content:center; 
+    width: 100px;
+    height: 40px;
+    background-color: #C8C8C8;
+    border-radius: 50px;
+}
+
+.attendance__content--status p {
+    color: #696969;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.attendance__content--date p {
+    font-weight: 400;
+    font-size: 40px;
+    color: #000000;
+}
+
+.attendance__content--currentTime p {
+    font-size: 80px;
+    font-weight: 700;
+}
+
+.attendance__content--button {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.attendance__content--button form {
+    display: inline-block;
+}
+
+.attendance__content--button button {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 220px;
+    height: 77px;
+    margin-right: 20px;
+}
+
+.btn-clock_in, .btn-clock_out {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.btn-rest_in, .btn-rest_out {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.attendance__content--button button:hover {
+    opacity: 0.8;
+}
+
+.clockOut-message {
+    font-size: 26px;
+    font-weight: 700;
+}

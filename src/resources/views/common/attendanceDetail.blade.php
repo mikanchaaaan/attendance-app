@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/attendancedetail.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -43,15 +47,6 @@
 @endsection
 
 @section('content')
-<p>現在のガード: {{ Auth::getDefaultDriver() }}</p>
-
-@if(Auth::guard('admin')->check())
-    <p>管理者としてログイン中</p>
-@elseif(Auth::guard('web')->check())
-    <p>一般ユーザーとしてログイン中</p>
-@else
-    <p>未ログイン</p>
-@endif
 
 <div class="container">
     <div class="attendance__detail--title">
@@ -73,11 +68,13 @@
                 <tbody>
                     <tr>
                         <th>名前</th>
-                        <td>{{ $name }}</td>
+                        <td colspan="3">
+                            {{ $name }}
+                        </td>
                     </tr>
                     <tr>
                         <th>日付</th>
-                        <td>
+                        <td colspan="2">
                             @if($isPending)
                                 <input type="text" class="requesting" name="clock_year" value="{{ $year }}" readonly>
                             @else
@@ -108,12 +105,8 @@
                             @if($isPending)
                                 <input type="text" class="requesting" name="clock_out_time" value="@formatTime($attendanceRequest->requested_clock_out_time)" readonly>
                             @else
-                                <input type="text" name="clock_out_time" value="@formatTime($attendance->clock_out_time)">
+                                <input type="text"  class="notRequesting" name="clock_out_time" value="@formatTime($attendance->clock_out_time)">
                             @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4">
                             <!-- エラーメッセージの表示部分 -->
                             <div class="form__error">
                                 @if ($errors->has('clock_in_time'))
@@ -140,31 +133,21 @@
                                     <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($rest->rest_out_time)">
                                 @endif
                             </td>
-                        </tr>
-                    @endforeach
-                    <tr>
-                        <td colspan="4">
-                            <!-- エラーメッセージの表示部分 -->
                             <div class="form__error">
                                 @foreach ($errors->get('rests.*.rest_in_time') as $error)
                                     <p>{{ $error[0] }}</p> {{-- 配列の最初のメッセージを表示 --}}
                                 @endforeach
                             </div>
-                        </td>
-                    </tr>
+                        </tr>
+                    @endforeach
                     <tr>
                         <th>備考</th>
-                        <td>
+                        <td colspan="3">
                             @if($isPending)
                                 <textarea class="requesting" name="comment" readonly>{{ ($attendanceRequest->comment) }}</textarea>
                             @else
                                 <textarea class="notRequesting" name="comment"></textarea>
                             @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4">
-                            <!-- エラーメッセージの表示部分 -->
                             <div class="form__error">
                                 @if ($errors->has('comment'))
                                     {{ $errors->first('comment') }}
@@ -183,9 +166,9 @@
                     <p>* 承認待ちのため修正はできません。</p>
                 </div>
             @elseif((Auth::guard('admin')->check()))
-                <button type="submit" class="btn btn-primary">修正</button>
+                <button type="submit" class="btn btn-repair">修正</button>
             @else
-                <button type="submit" class="btn btn-warning">申請</button>
+                <button type="submit" class="btn btn-repair">修正</button>
             @endif
         </div>
     </div>
