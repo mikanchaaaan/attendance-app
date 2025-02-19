@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/admin_attendancelist.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -29,29 +33,27 @@
 @endsection
 
 @section('content')
-
-<p>現在のガード: {{ Auth::getDefaultDriver() }}</p>
-
-@if(Auth::guard('admin')->check())
-    <p>管理者としてログイン中</p>
-@elseif(Auth::guard('web')->check())
-    <p>一般ユーザーとしてログイン中</p>
-@else
-    <p>未ログイン</p>
-@endif
-
+<div class="container">
     <div class="attendanceList__title">
         <h1>{{ \Carbon\Carbon::parse($date)->format('Y年n月j日') }}の勤怠</h1>
     </div>
 
     <div class="attendanceList__selectMonth">
-        <!-- 日付選択 & ナビゲーション -->
-        <a href="{{ url('/admin/attendance/list') }}?date={{ $prevDate }}" class="btn btn-primary">←前日</a>
-        <p>{{ \Carbon\Carbon::parse($date)->format('Y/m/d') }}</p>
-        <a href="{{ url('/admin/attendance/list') }}?date={{ $nextDate }}" class="btn btn-primary">翌日→</a>
+        <div class="attendanceList__selectMonth--last">
+            <img src="{{ asset('img/arrow.png')}}" alt="arrow_left" class="arrow-left">
+            <a href="{{ url('/admin/attendance/list') }}?date={{ $prevDate }}" class="btn btn-primary">前日</a>
+        </div>
+        <div class="attendanceList__selectMonth--date">
+            <img src="{{asset('img/calendar.png') }}" alt="calendar" class="calendar-img">
+            <span class="today">{{ \Carbon\Carbon::parse($date)->format('Y/m/d') }}</span>
+        </div>
+        <div class="attendanceList__selectMonth--next">
+            <a href="{{ url('/admin/attendance/list') }}?date={{ $nextDate }}" class="btn btn-primary">翌日</a>
+            <img src="{{ asset('img/arrow.png')}}" alt="arrow_right" class="arrow-right">
+        </div>
     </div>
 
-    <div class="adminAttendanceList__content">
+    <div class="attendanceList__content">
         <table border="1">
             <thead>
                 <tr>
@@ -95,5 +97,5 @@
             </tbody>
         </table>
     </div>
-
+</div>
 @endsection

@@ -10,7 +10,7 @@ use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\User;
 
-class userAttendanceListController extends Controller
+class UserAttendanceListController extends Controller
 {
     // 出勤一覧の表示
     public function userListView(Request $request)

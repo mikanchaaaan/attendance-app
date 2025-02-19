@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/admin_stafflist.css') }}">
+@endsection
+
 @section('page-move')
     <div class="header__button">
         <div class="header__button--attendance">
@@ -29,6 +33,7 @@
 @endsection
 
 @section('content')
+<div class="container">
     <div class="staffList__title">
         <h1>スタッフ一覧</h1>
     </div>
@@ -55,4 +60,5 @@
             </tbody>
         </table>
     </div>
+</div>
 @endsection

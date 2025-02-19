@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Attendance;
 
-class adminAttendanceListController extends Controller
+class AdminAttendanceListController extends Controller
 {
     // 管理者用勤怠一覧ページの表示
     public function adminListView(Request $request){

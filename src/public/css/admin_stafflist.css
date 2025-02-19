@@ -1,0 +1,55 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* タイトル部分 */
+.staffList__title h1 {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    border-left: 5px solid black;
+    padding-left: 10px;
+}
+
+/* テーブルデザイン */
+.staffList__content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: #737373;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+}
+
+.staffList__content th,
+.staffList__content td {
+    padding: 10px 70px;
+    text-align: center;
+    border: 2px solid #e1e1e1;
+    border-left: none;
+    border-right: none;
+    border-radius: 10px;
+    height: 18px;
+}
+
+.staffList__content th {
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #737373;
+    font-size: 16px;
+    border-top: none;
+}
+
+.staffList__content td a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.staffList__content td a:hover {
+    text-decoration: underline;
+}

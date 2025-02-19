@@ -8,7 +8,7 @@ use App\Models\Rest;
 use App\Models\AttendanceRequest;
 use App\Http\Requests\AttendanceRequestForm;
 
-class adminRequestAttendanceController extends Controller
+class AdminRequestAttendanceController extends Controller
 {
     // 勤怠修正（管理者用）
     public function adminRequestUpdate(AttendanceRequestForm $request)
@@ -106,9 +106,9 @@ class adminRequestAttendanceController extends Controller
 
         $name = $user->name;
 
-        // 承認待ちの申請があるか確認
+        // 最新の承認履歴を取得（承認済みのデータも含める）
         $attendanceRequest = AttendanceRequest::where('attendance_id', $attendance->id)
-        ->where('status', 'pending')
+        ->orderByDesc('updated_at') // 最新のものを取得
         ->first();
 
         if ($attendanceRequest) {
@@ -117,6 +117,7 @@ class adminRequestAttendanceController extends Controller
             $monthDay = $attendanceRequest->requested_clock_date->format('n') . '月' . $attendanceRequest->requested_clock_date->format('j') . '日';
             $isPending = true;
             $status = $attendanceRequest->status;
+            $comment = $attendanceRequest->comment;
         } else {
             $date = $attendance->date;
             $dateObj = new \DateTime($date);
@@ -126,6 +127,6 @@ class adminRequestAttendanceController extends Controller
             $status = 'approved';
         }
 
-        return view('admin.attendanceApprove', compact('name', 'year', 'monthDay', 'attendance', 'rests', 'isPending', 'status', 'attendanceRequest'));
+        return view('admin.attendanceApprove', compact('name', 'year', 'monthDay', 'attendance', 'rests', 'isPending', 'status', 'attendanceRequest', 'comment'));
     }
 }

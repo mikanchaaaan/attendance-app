@@ -32,11 +32,25 @@ class LoginResponse implements LoginResponseContract
                 'is_user' => Auth::guard('web')->check(),
             ]);
 
-            return redirect('/admin/attendance/list');
+            // 管理者用のクッキーを設定
+            $adminCookie = cookie('admin_session', 'some_value', 120);  // 任意の値と有効期限
+
+            // ユーザー用のクッキーを削除
+            $deleteUserCookie = cookie()->forget('user_session');
+
+            // クッキーをレスポンスに添付してリダイレクト
+            return redirect('/admin/attendance/list')
+                ->withCookie($deleteUserCookie) // ユーザー用クッキーを削除
+                ->withCookie($adminCookie); // 管理者用クッキー
         }
 
         Log::info('Redirecting to user dashboard');
         Auth::guard('admin')->logout();
-        return redirect('/attendance');
+
+        // ユーザー用のクッキーを設定
+        $userCookie = cookie('user_session', 'some_value', 120);  // 任意の値と有効期限
+
+        // クッキーをレスポンスに添付してリダイレクト
+        return redirect('/attendance')->withCookie($userCookie);
     }
 }

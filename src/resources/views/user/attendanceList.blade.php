@@ -51,7 +51,6 @@
             <a href="{{ url('/attendance/list') }}?month={{ $nextMonth }}" class="btn btn-primary">後月</a>
             <img src="{{ asset('img/arrow.png')}}" alt="arrow_right" class="arrow-right">
         </div>
-
     </div>
 
     <div class="attendanceList__content">

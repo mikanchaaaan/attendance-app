@@ -82,9 +82,9 @@ class FortifyServiceProvider extends ServiceProvider
                     Log::info('Admin session', ['cookie' => env('SESSION_COOKIE_ADMIN', 'admin_session')]);
                     Config::set('session.table', env('SESSION_TABLE_ADMIN', 'sessions_admin'));
                     Config::set('session.cookie', env('SESSION_COOKIE_ADMIN', 'admin_session'));
-                    $cookie = Cookie::make(env('SESSION_COOKIE_ADMIN', 'admin_session'), 'some_value', 120, '/', null, false, true);
 
                     session(['auth_guard' => 'admin']);  // 管理者ガードのセッション情報
+                    Session::save();
 
                     Log::info('LoginResponse1', [
                         'auth_guard' => session('auth_guard'),
@@ -96,8 +96,6 @@ class FortifyServiceProvider extends ServiceProvider
                         'table' => Config::get('session.table'),
                         'cookie' => Config::get('session.cookie')
                     ]);
-
-                    Session::save();
 
                     return $admin; // 認証成功
                 }
@@ -114,6 +112,7 @@ class FortifyServiceProvider extends ServiceProvider
                     Config::set('session.cookie', env('SESSION_COOKIE_USER', 'user_session'));
 
                     session(['auth_guard' => 'web']);
+                    Session::save(); // セッション保存
 
                     Log::info('LoginResponse2', [
                         'auth_guard' => session('auth_guard'),
@@ -125,8 +124,6 @@ class FortifyServiceProvider extends ServiceProvider
                         'table' => Config::get('session.table'),
                         'cookie' => Config::get('session.cookie')
                     ]);
-
-                    Session::save();
 
                     return $user; // 認証成功
                 }

@@ -6,7 +6,7 @@
 }
 
 /* タイトル部分 */
-.attendanceList__title h1 {
+.staffList__title h1 {
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 30px;
@@ -15,7 +15,7 @@
 }
 
 /* 月の選択ボタン */
-.attendanceList__selectMonth {
+.staffList__selectMonth {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,11 +33,6 @@
     font-weight: 700;
     text-decoration: none;
     margin: 0 5px;
-}
-
-.attendanceList__selectMonth--date {
-    font-weight: 700;
-    font-size: 20px;
 }
 
 .arrow-left,
@@ -61,15 +56,15 @@
     height: 25px;
 }
 
-.attendanceList__selectMonth--last,
-.attendanceList__selectMonth--next {
+.staffList__selectMonth--last,
+.staffList__selectMonth--next {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 /* テーブルデザイン */
-.attendanceList__content table {
+.staffAttendance__content table {
     width: 100%;
     border-collapse: collapse;
     background: white;
@@ -80,8 +75,8 @@
     border-radius: 10px;
 }
 
-.attendanceList__content th,
-.attendanceList__content td {
+.staffAttendance__content th,
+.staffAttendance__content td {
     padding: 10px;
     text-align: center;
     border: 2px solid #e1e1e1;
@@ -90,7 +85,7 @@
     border-radius: 10px;
 }
 
-.attendanceList__content th {
+.staffAttendance__content th {
     background-color: #ffffff;
     font-weight: bold;
     color: #737373;
@@ -98,12 +93,24 @@
     border-top: none;
 }
 
-.attendanceList__content td a {
+.staffAttendance__content td a {
     color: #000000;
     text-decoration: none;
     font-weight: bold;
 }
 
-.attendanceList__content td a:hover {
+.staffAttendance__content td a:hover {
     text-decoration: underline;
+}
+
+.csv-report__button button{
+    align-items: center;
+    width: 184px;
+    height: 50px;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    margin-top: 30px;   
 }

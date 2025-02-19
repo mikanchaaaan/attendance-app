@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Attendance;
 
-class adminStaffManagementController extends Controller
+class AdminStaffManagementController extends Controller
 {
     // スタッフ一覧の表示（管理者用）
 

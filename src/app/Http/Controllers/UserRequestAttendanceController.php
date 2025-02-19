@@ -10,7 +10,7 @@ use App\Http\Requests\AttendanceRequestForm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class userRequestAttendanceController extends Controller
+class UserRequestAttendanceController extends Controller
 {
     // 勤怠詳細の表示
     public function userDetailView($attendance_id)

@@ -10,7 +10,7 @@ use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\User;
 
-class userAttendanceController extends Controller
+class UserAttendanceController extends Controller
 {
     // 出勤登録画面の表示
     public function attendance()

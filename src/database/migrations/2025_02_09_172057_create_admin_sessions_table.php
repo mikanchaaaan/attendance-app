@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('sessions_admin', function (Blueprint $table) {
+        Schema::create('admin_sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -19,7 +19,7 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('sessions_admin');
+        Schema::dropIfExists('admin_sessions');
     }
 };
 

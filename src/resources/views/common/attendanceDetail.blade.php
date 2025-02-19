@@ -53,14 +53,8 @@
         <h1>勤怠詳細</h1>
     </div>
 
-    <form method="POST" action="
-        @if(Auth::guard('admin')->check()))
-            /admin/attendance/update
-        @else
-            /attendance/request
-        @endif
-    ">
-    @csrf
+    <form method="POST" action="{{ Auth::guard('admin')->check() ? url('/admin/attendance/update') : url('/attendance/request') }}">
+        @csrf
         <input type="hidden" name="id" value="{{ $attendance->id }}">
 
         <div class="attendance__detail--table">
@@ -75,14 +69,18 @@
                     <tr>
                         <th>日付</th>
                         <td colspan="2">
-                            @if($isPending)
+                            @if((Auth::guard('admin')->check()))
+                                <input type="text" class="notRequesting" name="clock_year" value="{{ $year }}">
+                            @elseif($isPending)
                                 <input type="text" class="requesting" name="clock_year" value="{{ $year }}" readonly>
                             @else
                                 <input type="text" class="notRequesting" name="clock_year" value="{{ $year }}">
                             @endif
                         </td>
                         <td>
-                            @if($isPending)
+                            @if((Auth::guard('admin')->check()))
+                                <input type="text" class="notRequesting" name="clock_monthDay" value="{{ $monthDay }}">
+                            @elseif($isPending)
                                 <input type="text" class="requesting" name="clock_monthDay" value="{{ $monthDay }}" readonly>
                             @else
                                 <input type="text" class="notRequesting" name="clock_monthDay" value="{{ $monthDay }}">
@@ -94,79 +92,80 @@
                     <tr>
                         <th>出勤・退勤</th>
                         <td>
-                            @if($isPending)
+                            @if((Auth::guard('admin')->check()))
+                                <input type="text" class="notRequesting" name="clock_in_time" value="{{ old('clock_in_time', $attendance->formatted_clock_in_time) }}">
+                            @elseif($isPending)
                                 <input type="text" class="requesting" name="clock_in_time" value="@formatTime($attendanceRequest->requested_clock_in_time)" readonly>
                             @else
-                                <input type="text" class="notRequesting" name="clock_in_time" value="@formatTime($attendance->clock_in_time)">
+                                <input type="text" class="notRequesting" name="clock_in_time" value="{{ old('clock_in_time', $attendance->formatted_clock_in_time) }}">
                             @endif
                         </td>
                         <td>～</td>
                         <td>
-                            @if($isPending)
+                            @if((Auth::guard('admin')->check()))
+                                <input type="text" class="notRequesting" name="clock_out_time" value="{{ old('clock_out_time', $attendance->formatted_clock_out_time) }}">
+                            @elseif($isPending)
                                 <input type="text" class="requesting" name="clock_out_time" value="@formatTime($attendanceRequest->requested_clock_out_time)" readonly>
                             @else
-                                <input type="text"  class="notRequesting" name="clock_out_time" value="@formatTime($attendance->clock_out_time)">
+                                <input type="text" class="notRequesting" name="clock_out_time" value="{{ old('clock_out_time', $attendance->formatted_clock_out_time) }}">
                             @endif
-                            <!-- エラーメッセージの表示部分 -->
-                            <div class="form__error">
-                                @if ($errors->has('clock_in_time'))
-                                    {{ $errors->first('clock_in_time') }}
-                                @endif
-                            </div>
                         </td>
                     </tr>
                     @foreach($rests as $index => $rest)
                         <tr>
                             <th>休憩{{ $index == 0 ? '' : $index + 1 }}</th>
                             <td>
-                                @if($isPending)
+                                @if((Auth::guard('admin')->check()))
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="{{ old('rests.' . $rest->id . '.rest_in_time', $rest->formatted_rest_in_time) }}">
+                                @elseif($isPending)
                                     <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_in_time)" readonly>
                                 @else
-                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($rest->rest_in_time)">
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="{{ old('rests.' . $rest->id . '.rest_in_time', $rest->formatted_rest_in_time) }}">
                                 @endif
                             </td>
                             <td>～</td>
                             <td>
-                                @if($isPending)
+                                @if((Auth::guard('admin')->check()))
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="{{ old('rests.' . $rest->id . '.rest_out_time', $rest->formatted_rest_out_time) }}">
+                                @elseif($isPending)
                                     <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_out_time)" readonly>
                                 @else
-                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($rest->rest_out_time)">
+                                    <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="{{ old('rests.' . $rest->id . '.rest_out_time', $rest->formatted_rest_out_time) }}">
                                 @endif
                             </td>
-                            <div class="form__error">
-                                @foreach ($errors->get('rests.*.rest_in_time') as $error)
-                                    <p>{{ $error[0] }}</p> {{-- 配列の最初のメッセージを表示 --}}
-                                @endforeach
-                            </div>
                         </tr>
                     @endforeach
                     <tr>
                         <th>備考</th>
                         <td colspan="3">
-                            @if($isPending)
+                            @if((Auth::guard('admin')->check()))
+                                <textarea class="notRequesting" name="comment"></textarea>
+                            @elseif($isPending)
                                 <textarea class="requesting" name="comment" readonly>{{ ($attendanceRequest->comment) }}</textarea>
                             @else
                                 <textarea class="notRequesting" name="comment"></textarea>
                             @endif
-                            <div class="form__error">
-                                @if ($errors->has('comment'))
-                                    {{ $errors->first('comment') }}
-                                @endif
-                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        @if ($errors->any())
+            <div class="form__error">
+                @foreach (array_unique($errors->all()) as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
 
         {{-- ボタンの表示 --}}
         <div class="attendance__request--button">
-            @if($isPending)
+            @if((Auth::guard('admin')->check()))
+                <button type="submit" class="btn btn-repair">修正</button>
+            @elseif($isPending)
                 <div class="pending-message">
                     <p>* 承認待ちのため修正はできません。</p>
                 </div>
-            @elseif((Auth::guard('admin')->check()))
-                <button type="submit" class="btn btn-repair">修正</button>
             @else
                 <button type="submit" class="btn btn-repair">修正</button>
             @endif

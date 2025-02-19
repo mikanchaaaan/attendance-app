@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Actions\Fortify\LoginResponse;
 
-class adminAuthenticatedController extends AuthenticatedSessionController
+class AdminAuthenticatedController extends AuthenticatedSessionController
 {
     public function destroy(Request $request): LogoutResponse
     {
