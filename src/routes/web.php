@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\UserAttendanceController;
 use App\Http\Controllers\UserAttendanceListController;
 use App\Http\Controllers\UserRequestAttendanceController;
@@ -63,6 +64,9 @@ Route::middleware(['auth:admin'])->group(function () {
 
     // スタッフ別勤怠一覧表示
     Route::get('/admin/attendance/staff/{user_id}', [AdminStaffManagementController::class, 'viewStaffAttendance']);
+
+    // スタッフ別勤怠CSVエクスポート
+    Route::get('admin/attendance/export/{user_id}', [AdminStaffManagementController::class, 'csvExport']);
 });
 
 Route::middleware(['auth:web,admin'])->group(function () {
@@ -72,3 +76,21 @@ Route::middleware(['auth:web,admin'])->group(function () {
     // 勤怠申請一覧の表示
     Route::get('/stamp_correction_request/list', [UserRequestAttendanceController::class, 'requestView']);
 });
+
+// メール確認ページ
+Route::get('email/verify', function () {
+    return view('user.verify');
+})->middleware(['auth'])->name('verification.notice');
+
+// メール確認リンクの処理
+Route::get('email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/attendance');
+})->middleware(['auth'])->name('verification.verify');
+
+// メール確認の再送信
+Route::middleware('auth')->post('email/verification-notification', function () {
+    auth()->user()->sendEmailVerificationNotification();
+
+    return back()->with('resent', true);
+})->name('verification.send');

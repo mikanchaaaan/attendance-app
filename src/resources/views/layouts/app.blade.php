@@ -13,7 +13,15 @@
     <header class="header">
         <div class="header__inner">
             <div class="header__logo">
-                <img src="{{ asset('img/logo.svg') }}" alt="ロゴ">
+                @if(Auth::guard('admin')->check())
+                    <a href="/admin/attendance/list" class="header__logo--inner">
+                        <img src="{{ asset('img/logo.svg') }}" alt="ロゴ">
+                    </a>
+                @else
+                    <a href="/attendance" class="header__logo--inner">
+                        <img src="{{ asset('img/logo.svg') }}" alt="ロゴ">
+                    </a>
+                @endif
             </div>
             @yield('page-move')
         </div>
