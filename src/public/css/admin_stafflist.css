@@ -53,3 +53,10 @@
 .staffList__content td a:hover {
     text-decoration: underline;
 }
+
+@media (max-width: 850px) {
+    .staffList__content th,
+    .staffList__content td {
+        white-space: nowrap;
+    }
+}

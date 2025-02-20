@@ -11,7 +11,7 @@ use App\Http\Controllers\AdminAuthenticatedController;
 use App\Http\Controllers\AdminStaffManagementController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
-Route::middleware(['auth:web'])->group(function () {
+Route::middleware(['auth:web', 'verified'])->group(function () {
     // 出勤登録画面の表示
     Route::get('/attendance', [UserAttendanceController::class, 'attendance']);
 

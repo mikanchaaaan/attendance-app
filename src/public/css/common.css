@@ -43,3 +43,34 @@ body {
     border:none;
     cursor: pointer;
 }
+
+@media (max-width: 850px) {
+    .header {
+        height: 90px;
+    }
+
+    .header__logo {
+        padding: 25px;
+    }
+
+    .header__inner {
+        justify-content: space-between;
+    }
+
+    .header__button {
+        margin: 20px 20px;
+    }
+
+    .logout-button,
+    .header__button--attendance a,
+    .header__button--attendance-list a,
+    .header__button--attendance-request a{
+        font-size: 16px;
+    }
+
+    .login-button {
+        display: inline-block;
+        padding-top: 3px;
+    }
+
+}

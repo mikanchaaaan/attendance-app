@@ -126,3 +126,20 @@
 .attendance__request--button .btn-success {
     background-color: #696969;
 }
+
+@media (max-width: 850px){
+    .attendance__detail--table table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .attendance__detail--table th {
+        width: 20%;
+        white-space: nowrap;
+    }
+
+    .attendance__detail--table textarea {
+        width: 400px;
+    }
+}
