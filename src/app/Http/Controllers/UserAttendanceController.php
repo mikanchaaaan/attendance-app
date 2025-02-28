@@ -55,13 +55,6 @@ class UserAttendanceController extends Controller
             $showCheckOutButton = true;
             $showRestInButton = !$isResting;
             $showRestOutButton = $isResting;
-        } elseif ($attendance->clock_in_time && !$attendance->clock_out_time) {
-            // 出勤しているが、退勤していない場合
-            $status = "勤務中";
-            $showCheckInButton = false;
-            $showCheckOutButton = true;
-            $showRestInButton = true;
-            $showRestOutButton = false;
         } elseif ($attendance->clock_in_time && $attendance->clock_out_time) {
             // 退勤済みの場合
             $status = "退勤済み";

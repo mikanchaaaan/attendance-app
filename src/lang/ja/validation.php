@@ -19,7 +19,7 @@ return [
         'string' => ':attributeはmax文字以内で入力してください',
     ],
     'min' => [
-        'string' => ':attributeは:min文字以内で入力してください',
+        'string' => ':attributeは:min文字以上で入力してください',
     ],
     'confirmed' => 'パスワードと一致しません',
     'unique'    => '同じ :attribute は使用できません。',

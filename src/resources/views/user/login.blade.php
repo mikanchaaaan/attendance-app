@@ -25,9 +25,6 @@
                         @error('email')
                         {{ $message }}
                         @enderror
-                        @if (session('message'))
-                            {{ session('message') }}
-                        @endif
                     </div>
                 </div>
             </div>
