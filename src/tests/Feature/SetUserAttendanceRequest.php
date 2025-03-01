@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Attendance;
 use App\Models\AttendanceRequest;
-use App\Models\Rest;
 use Carbon\Carbon;
 
 class SetUserAttendanceRequest extends TestCase
@@ -149,6 +148,7 @@ class SetUserAttendanceRequest extends TestCase
         $this->assertContains('休憩時間が勤務時間外です', $errors['rests.0.rest_out_time']);
     }
 
+    // 勤怠詳細情報修正機能(一般ユーザ) - 備考欄が未入力の場合のエラーメッセージが表示される
     public function testCommentValidation()
     {
         $user = User::factory()->create([
