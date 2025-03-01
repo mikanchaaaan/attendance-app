@@ -5,7 +5,6 @@
     align-items: center;
     text-align: center;
     margin-top: 100px;
-    /* 高さを全画面に合わせる */
 }
 
 .verify-message {
@@ -16,7 +15,6 @@
     margin-bottom: 50px;
 }
 
-/* verify-button のスタイル */
 .verify-button {
     margin-top: 20px;
     margin-bottom: 50px;
@@ -26,21 +24,16 @@
     display: inline-block;
     padding: 12px 24px;
     background-color: #d9d9d9;
-    /* ボタンの背景色 */
     color: #000000;
-    /* ボタンの文字色 */
     font-size: 24px;
     font-weight: bold;
     text-decoration: none;
     border: 1px solid #000000;
-    /* アンダーラインを消す */
     border-radius: 8px;
-    /* ボタンの角を丸くする */
 }
 
 .verify-resend button{
     border: none;
     font-size: 20px;
     color: #0077cc;
-
 }

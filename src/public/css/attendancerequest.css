@@ -37,7 +37,6 @@
     font-weight: 700;
 }
 
-/* テーブルのスタイル */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -57,7 +56,6 @@ thead th {
     border-left: none;
 }
 
-/* 状態のスタイル（中央寄せ） */
 td:first-child,
 td:last-child {
     font-weight: bold;
@@ -72,12 +70,10 @@ tbody td {
     border-left: none;
 }
 
-/* 状態のスタイル */
 td:first-child {
     font-weight: bold;
 }
 
-/* 詳細ボタンのスタイル */
 td a {
     color: black;
     text-decoration: none;

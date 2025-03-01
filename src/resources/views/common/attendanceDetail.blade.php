@@ -28,7 +28,6 @@
             @endif
         </div>
         @auth
-            <!-- ログインしている場合 -->
             <div class="header__button--logout">
                 @if(Auth::guard('admin')->check())
                     <form action="/admin/logout" class="logout-form" method="post">
@@ -158,7 +157,6 @@
             </div>
         @endif
 
-        {{-- ボタンの表示 --}}
         <div class="attendance__request--button">
             @if((Auth::guard('admin')->check()))
                 <button type="submit" class="btn btn-repair">修正</button>

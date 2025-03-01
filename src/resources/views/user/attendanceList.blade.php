@@ -15,7 +15,6 @@
         <div class="header__button--attendance-request">
             <a href="/stamp_correction_request/list" class="goto">申請</a>
         </div>
-        <!-- ログインしている場合 -->
         <div class="header__button--logout">
             <form action="/logout" class="logout-form" method="post">
                 @csrf
@@ -66,14 +65,13 @@
                         <td>@formatTime($date['clock_out_time'])</td>
                         <td>
                             @php
-                                // 初期値を設定（対応するデータがない場合や勤務未完了時に備える）
                                 $totalRestTime = $restTimes[$date['date']]['total_rest_time'] ?? 0;
                             @endphp
 
                             @if ($date['clock_out_time'])
                                 {{ $date['rest_time'] }}
                             @else
-                                - <!-- 勤務未完了時の表示 -->
+                                -
                             @endif
                         </td>
 
@@ -81,7 +79,7 @@
                             @if ($date['clock_out_time'])
                                 {{ $date['work_time'] }}
                             @else
-                                - <!-- 退勤していない場合は表示しない -->
+                                -
                             @endif
                         </td>
                         <td>

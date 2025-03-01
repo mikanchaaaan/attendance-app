@@ -18,10 +18,8 @@ class UserRequestAttendanceController extends Controller
         $attendance = Attendance::findOrFail($attendance_id);
         $rests = $attendance->rests()->get();
         $user = $attendance->user;
-
         $name = $user->name;
 
-        // 承認待ちの申請があるか確認
         $attendanceRequest = AttendanceRequest::where('attendance_id', $attendance->id)
         ->where('status', 'pending')
         ->first();
@@ -35,7 +33,7 @@ class UserRequestAttendanceController extends Controller
             $date = $attendance->date;
             $dateObj = new \DateTime($date);
             $year = $dateObj->format('Y') . '年';
-            $monthDay = $dateObj->format('n') . '月' . $dateObj->format('j') . '日';  // X月X日
+            $monthDay = $dateObj->format('n') . '月' . $dateObj->format('j') . '日';
             $isPending = false;
         }
 
@@ -46,25 +44,17 @@ class UserRequestAttendanceController extends Controller
     public function attendanceRequest(AttendanceRequestForm $request)
     {
         $user = auth()->user();
-
-        // フォームから送られてきた日付を取得
         $date = $request->input('date');
-
-        // 該当の日付の勤怠情報を取得（ユーザーの出勤情報を `date` で検索）
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', $date)
             ->firstOrFail();
 
-        // 勤務時間の変更
         $clockYear = str_replace('年', '', $request->input('clock_year'));
         $clockMonthDay = str_replace(['月', '日'], ['-', ''], $request->input('clock_monthDay'));
         $clockDate = Carbon::createFromFormat('Y-n-j', $clockYear . '-' . $clockMonthDay)->format('Y-m-d');
-
-        // 変更がない場合は、元の `attendance` の値を使う
         $clockInTime = $request->input('clock_in_time') ?? $attendance->clock_in_time;
         $clockOutTime = $request->input('clock_out_time') ?? $attendance->clock_out_time;
 
-        // 申請データを保存
         $attendanceRequest = AttendanceRequest::create([
             'user_id' => $user->id,
             'attendance_id' => $attendance->id,
@@ -75,16 +65,12 @@ class UserRequestAttendanceController extends Controller
             'comment' => $request->input('comment'),
         ]);
 
-        // 休憩時間の新規作成
         if ($request->has('rests')) {
             foreach ($request->input('rests') as $restData) {
-                // 新しい休憩時間を作成
                 $rest = Rest::create([
                     'rest_in_time' => $restData['rest_in_time'],
                     'rest_out_time' => $restData['rest_out_time'],
                 ]);
-
-                // attendance_request_rest テーブルで紐づけ
                 $attendanceRequest->rests()->attach($rest->id);
             }
         }
@@ -98,7 +84,6 @@ class UserRequestAttendanceController extends Controller
         $user = auth()->user();
         $tab = $request->query('tab', 'pending');
 
-        // 管理者なら全員分、一般ユーザなら自分の申請のみ取得
         if((Auth::guard('admin')->check())) {
             if ($tab == 'pending') {
                 $attendanceRequests = AttendanceRequest::where('status', 'pending')->get();

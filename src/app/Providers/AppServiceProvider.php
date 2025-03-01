@@ -22,15 +22,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Carbonのロケールを日本語に設定
         Carbon::setLocale('ja');
 
-        // @formatTimeでH:iの形式で時間を表示できるようにする
         Blade::directive('formatTime', function ($expression) {
             return "<?php echo $expression ? \Carbon\Carbon::parse($expression)->format('H:i') : '-'; ?>";
         });
 
-        // @formatDateでXX/XX(曜日)の形式で日にちを表示できるようにする
         Blade::directive('formatDate', function ($date) {
             return "<?php echo \Carbon\Carbon::parse($date)->isoFormat('MM/DD（dd）'); ?>";
         });

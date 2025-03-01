@@ -12,7 +12,6 @@
     <div class="login__content--inner">
         <form action="/login" class="form" method="post">
             @csrf
-            <!-- ログイン情報入力 -->
             <div class="form__group">
                 <div class="form__group-title">
                     <span class="form__label--item">メールアドレス</span>
@@ -28,7 +27,6 @@
                     </div>
                 </div>
             </div>
-            <!-- パスワード入力 -->
             <div class="form__group">
                 <div class="form__group-title">
                     <span class="form__label--item">パスワード</span>

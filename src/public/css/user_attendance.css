@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 中央寄せ */
     justify-content: center;
     margin-top: 100px;
 }

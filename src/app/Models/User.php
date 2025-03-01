@@ -56,12 +56,12 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function attendance()
+    public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
 
-    public function rest()
+    public function rests()
     {
         return $this->hasMany(Rest::class);
     }

@@ -36,7 +36,7 @@ class AttendanceRequestForm extends FormRequest
 
                     if ($clockInTime && $clockOutTime) {
                         if ($value < $clockInTime || $value > $clockOutTime) {
-                            $fail('休憩時間が勤務時間外です。');
+                            $fail('休憩時間が勤務時間外です');
                         }
                     }
                 }
@@ -51,7 +51,7 @@ class AttendanceRequestForm extends FormRequest
 
                     if ($clockInTime && $clockOutTime) {
                         if ($value < $clockInTime || $value > $clockOutTime) {
-                            $fail('休憩時間が勤務時間外です。');
+                            $fail('休憩時間が勤務時間外です');
                         }
                     }
                 }
@@ -64,12 +64,12 @@ class AttendanceRequestForm extends FormRequest
     public function messages()
     {
         return [
-            'clock_in_time.before' => '出勤時間もしくは退勤時間が不適切な値です。',
-            'clock_out_time.after' => '出勤時間もしくは退勤時間が不適切な値です。',
-            'rests.*.rest_in_time.after' => '休憩時間が勤務時間外です。',
-            'rests.*.rest_out_time.after' => '休憩時間が勤務時間外です。',
-            'rests.*.rest_out_time.before' => '休憩時間が勤務時間外です。',
-            'comment.required' => '備考を記入してください。',
+            'clock_in_time.before' => '出勤時間もしくは退勤時間が不適切な値です',
+            'clock_out_time.after' => '出勤時間もしくは退勤時間が不適切な値です',
+            'rests.*.rest_in_time.after' => '休憩時間が勤務時間外です',
+            'rests.*.rest_out_time.after' => '休憩時間が勤務時間外です',
+            'rests.*.rest_out_time.before' => '休憩時間が勤務時間外です',
+            'comment.required' => '備考を記入してください',
         ];
     }
 }

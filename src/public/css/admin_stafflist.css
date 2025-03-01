@@ -4,7 +4,6 @@
     padding: 20px;
 }
 
-/* タイトル部分 */
 .staffList__title h1 {
     font-size: 30px;
     font-weight: bold;
@@ -13,7 +12,6 @@
     padding-left: 10px;
 }
 
-/* テーブルデザイン */
 .staffList__content table {
     width: 100%;
     border-collapse: collapse;

@@ -13,13 +13,10 @@ class AdminRequestAttendanceController extends Controller
     // 勤怠修正（管理者用）
     public function adminRequestUpdate(AttendanceRequestForm $request)
     {
-        // 勤怠データの取得
         $attendance = Attendance::findOrFail($request->input('id'));
 
-        // 更新データを格納する配列
         $updatedData = [];
 
-        // 出勤・退勤時間のチェック
         if ($request->has('clock_in_time') && $request->clock_in_time !== $attendance->clock_in_time) {
             $updatedData['clock_in_time'] = $request->clock_in_time;
         }
@@ -28,15 +25,12 @@ class AdminRequestAttendanceController extends Controller
             $updatedData['clock_out_time'] = $request->clock_out_time;
         }
 
-        // 勤怠データの更新
         if (!empty($updatedData)) {
             $attendance->update($updatedData);
         }
 
-        // 休憩時間の更新
         if ($request->has('rests')) {
             foreach ($request->input('rests') as $restId => $restData) {
-                // 中間テーブルを考慮して、該当の休憩データを取得
                 $rest = $attendance->rests()->where('rests.id', $restId)->first();
 
                 if ($rest) {
@@ -62,25 +56,20 @@ class AdminRequestAttendanceController extends Controller
     // 勤怠承認
     public function attendanceRequestApprove(Request $request)
     {
-        // 勤怠申請データを取得（status = 'pending' のもの）
         $attendanceRequest = AttendanceRequest::where('attendance_id', $request->input('id'))
         ->where('status', 'pending')
         ->firstOrFail();
 
-        // 対応する勤怠データを取得
         $attendance = Attendance::findOrFail($attendanceRequest->attendance_id);
 
-        // 勤怠データの更新
         $attendance->update([
             'clock_in_time' => $attendanceRequest->requested_clock_in_time,
             'clock_out_time' => $attendanceRequest->requested_clock_out_time,
         ]);
 
-        // 休憩データの更新
-        $restRequests = $attendanceRequest->rests()->get(); // 中間テーブルを考慮して取得
+        $restRequests = $attendanceRequest->rests()->get();
 
         foreach ($restRequests as $restRequest) {
-            // `attendance` に紐づく `rest` を中間テーブル経由で取得
             $rest = $attendance->rests()->where('rests.id', $restRequest->id)->first();
 
             if ($rest) {
@@ -91,7 +80,6 @@ class AdminRequestAttendanceController extends Controller
             }
         }
 
-        // ステータスを `approved` に更新
         $attendanceRequest->update(['status' => 'approved']);
 
         return redirect('/stamp_correction_request/list?tab=approved');
@@ -106,9 +94,8 @@ class AdminRequestAttendanceController extends Controller
 
         $name = $user->name;
 
-        // 最新の承認履歴を取得（承認済みのデータも含める）
         $attendanceRequest = AttendanceRequest::where('attendance_id', $attendance->id)
-        ->orderByDesc('updated_at') // 最新のものを取得
+        ->orderByDesc('updated_at')
         ->first();
 
         if ($attendanceRequest) {
@@ -122,7 +109,7 @@ class AdminRequestAttendanceController extends Controller
             $date = $attendance->date;
             $dateObj = new \DateTime($date);
             $year = $dateObj->format('Y') . '年';
-            $monthDay = $dateObj->format('n') . '月' . $dateObj->format('j') . '日';  // X月X日
+            $monthDay = $dateObj->format('n') . '月' . $dateObj->format('j') . '日';
             $isPending = false;
             $status = 'approved';
         }

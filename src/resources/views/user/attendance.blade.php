@@ -15,7 +15,6 @@
         <div class="header__button--attendance-request">
             <a href="/stamp_correction_request/list" class="goto">申請</a>
         </div>
-        <!-- ログインしている場合 -->
         <div class="header__button--logout">
             <form action="/logout" class="logout-form" method="post">
                 @csrf

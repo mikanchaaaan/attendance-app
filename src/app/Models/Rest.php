@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Rest extends Model
 {
@@ -26,12 +27,12 @@ class Rest extends Model
 
     public function getFormattedRestInTimeAttribute()
     {
-        return $this->rest_in_time ? \Carbon\Carbon::parse($this->rest_in_time)->format('H:i') : '';
+        return $this->rest_in_time ? Carbon::parse($this->rest_in_time)->format('H:i') : '';
     }
 
     public function getFormattedRestOutTimeAttribute()
     {
-        return $this->rest_out_time ? \Carbon\Carbon::parse($this->rest_out_time)->format('H:i') : '';
+        return $this->rest_out_time ? Carbon::parse($this->rest_out_time)->format('H:i') : '';
     }
 }
 

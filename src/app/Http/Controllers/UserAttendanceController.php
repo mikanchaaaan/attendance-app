@@ -17,22 +17,17 @@ class UserAttendanceController extends Controller
     {
         Carbon::setLocale('ja');
 
-        // ログイン中のユーザ情報を取得
         /** @var User $user */
         $userId = auth()->id();
 
-        // 現在日付と時間を取得
         $today = Carbon::today();
         $currentTime = Carbon::now();
 
-        // viewへの表示用に表記を変更
         $todayView = Carbon::now()->isoFormat('YYYY年M月D日（dd）');
-        $currentTimeView = Carbon::now()->format('H:i'); // 'HH:MM'
+        $currentTimeView = Carbon::now()->format('H:i');
 
-        // ログイン中のユーザの勤怠情報を取得
         $attendance = Attendance::whereDate('date', $today)->where('user_id', $userId)->first();
 
-        // 初期化
         $isResting = $attendance ? $this->isResting($attendance) : false;
         $status = '';
         $showCheckInButton = false;
@@ -40,23 +35,19 @@ class UserAttendanceController extends Controller
         $showRestInButton = false;
         $showRestOutButton = false;
 
-        // 勤怠の確認
         if (!$attendance) {
-            // まだ出勤していない場合
             $status = "勤務外";
             $showCheckInButton = true;
             $showCheckOutButton = false;
             $showRestInButton = false;
             $showRestOutButton = false;
         } elseif ($attendance->clock_in_time && !$attendance->clock_out_time) {
-            // 出勤しているが、退勤していない場合
             $status = $isResting ? "休憩中" : "勤務中";
             $showCheckInButton = false;
             $showCheckOutButton = true;
             $showRestInButton = !$isResting;
             $showRestOutButton = $isResting;
         } elseif ($attendance->clock_in_time && $attendance->clock_out_time) {
-            // 退勤済みの場合
             $status = "退勤済み";
             $showCheckInButton = false;
             $showCheckOutButton = false;
@@ -66,7 +57,6 @@ class UserAttendanceController extends Controller
 
         $statusMessage = session()->get('status_message');
 
-        // 画面の表示
         return view('user.attendance', [
             'status' => $status,
             'today' => $todayView,
@@ -75,10 +65,10 @@ class UserAttendanceController extends Controller
             'showCheckOutButton' => $showCheckOutButton,
             'showRestInButton' => $showRestInButton,
             'showRestOutButton' => $showRestOutButton,
-            'statusMessage' => $statusMessage,  // セッションからメッセージを取得
+            'statusMessage' => $statusMessage,
         ]);
     }
-    // 休憩中かどうかを判断
+
     private function isResting($attendance)
     {
         return $attendance->rests()->whereNull('rest_out_time')->exists();
@@ -124,7 +114,6 @@ class UserAttendanceController extends Controller
             'rest_in_time' => $currentTime,
         ]);
 
-        // 中間テーブルに関係を登録
         $attendance->rests()->attach($rest->id, ['created_at' => now(), 'updated_at' => now()]);
 
         return redirect()->back()->with('status', '休憩中');
@@ -136,8 +125,6 @@ class UserAttendanceController extends Controller
         $currentTime = Carbon::now();
         $userId = auth()->id();
         $attendance = Attendance::whereDate('date', Carbon::today())->where('user_id', $userId)->first();
-
-        // 中間テーブル経由で紐づいている、休憩終了時間がまだ入っていない `Rest` を取得
         $rest = $attendance->rests()->whereNull('rest_out_time')->first();
 
         if ($rest) {

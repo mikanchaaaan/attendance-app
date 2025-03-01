@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(UserSeeder::class);
+        $user = User::first();
 
-        // Dateの作成（過去6か月）
         $existingDates = Attendance::pluck('date')->toArray();
         $startDate = now()->subMonths(6);
         $endDate = now();
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         sort($dates);
 
         $attendances = Attendance::factory(180)->withRest()->create([
-            'user_id' => 1,
+            'user_id' => $user->id,
             'date' => function () use (&$dates) {
                 return array_shift($dates);
             }

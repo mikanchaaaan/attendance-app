@@ -28,7 +28,6 @@
             @endif
         </div>
         @auth
-            <!-- ログインしている場合 -->
             <div class="header__button--logout">
                 @if(Auth::guard('admin')->check())
                     <form action="/admin/logout" class="logout-form" method="post">

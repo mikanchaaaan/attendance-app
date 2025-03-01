@@ -13,35 +13,29 @@ class AdminAttendanceListController extends Controller
 
         $user = auth('admin')->user();
 
-        // クエリパラメータがなければ今日の日付をデフォルトにする
         $date = $request->query('date', Carbon::today()->format('Y-m-d'));
 
-        // 勤怠データを取得
         $attendances = Attendance::with('user')
             ->whereDate('date', $date)
             ->orderBy('clock_in_time', 'asc')
             ->get();
 
-        // 前日・翌日の日付を計算
         $prevDate = Carbon::parse($date)->subDay()->format('Y-m-d');
         $nextDate = Carbon::parse($date)->addDay()->format('Y-m-d');
 
-        $work_times = []; // 勤務時間の配列
-        $rest_times = []; // 休憩時間の配列
+        $work_times = [];
+        $rest_times = [];
 
         foreach($attendances as $attendance) {
             $clockInTime = Carbon::parse($attendance->clock_in_time);
             $clockOutTime = Carbon::parse($attendance->clock_out_time);
 
-            // 退勤が出勤より前なら翌日とみなす
             if ($clockOutTime && $clockOutTime < $clockInTime) {
                 $clockOutTime->addDay();
             }
 
-            // 勤務時間計算
             $workTime = $clockOutTime ? $clockInTime->diffInMinutes($clockOutTime) : 0;
 
-            // 休憩時間計算
             $restTime = 0;
             foreach ($attendance->rests as $rest) {
                 if ($rest->rest_out_time) {
