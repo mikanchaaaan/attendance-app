@@ -18,8 +18,9 @@
 ### 環境変数（.env）
 | 変数名              | 値                                         | 備考                                    |
 | ------------------- | ------------------------------------------ | --------------------------------------- |
-| DB_HOST             | mysql                                      | 接続するデータベース                    |
-| DB_CONNECTION       | mysql                                      | 接続するデータベース                    |
+| DB_CONNECTION       | mysql                                      | 接続するデータベース接続名                    |
+| DB_HOST       　　　 | mysql                                      | 接続するデータベース                    |
+| DB_PORT             | 3306                                      | データベース接続時に利用するポート                  |
 | DB_DATABASE         | docker-compose.ymlの「MYSQL_DATABASE」参照 | 接続するデータベース名                  |
 | DB_USERNAME         | docker-compose.ymlの「MYSQL_USER」参照     | データベースに接続時のユーザー名        |
 | DB_PASSWORD         | docker-compose.ymlの「MYSQL_PASSWORD」参照 | データベースに接続時のパスワード        |
@@ -28,6 +29,9 @@
 | SESSION_TABLE_ADMIN | admin_sessions                            | 管理者ユーザで使用するセッションテーブル名        |
 | SESSION_COOKIE_USER | user_session                              | 一般ユーザで使用するクッキー名        |
 | SESSION_COOKIE_ADMIN | admin_session                            | 管理者ユーザで使用するクッキー名      |
+| MAIL_MAILER       | smtp                                        | メール認証で使用するサービス      |
+| MAIL_HOST         | mailhog                                     | メール認証時に使用するホスト名      |
+| MAIL_PORT         | 1025                                        | メール認証時に使用するポート      |
 | MAIL_FROM_ADDRESS | ```hello@example.com```                     | メール認証時の送信元メールアドレス      |
 
 ### 使用技術
@@ -38,7 +42,9 @@
 * mailhog latest
 
 ### URL
-* 開発環境：```http://localhost/```
+* 開発環境：
+  * 一般ユーザ：```http://localhost/login```
+  * 管理者ユーザ：```http://localhost/admin/login```
 * phpMyAdmin：```http://localhost:8080/```
 * Mailhog：```http://localhost:8025/```
 
@@ -49,7 +55,8 @@
 
 #### 勤怠データ確認用一般ユーザログイン情報（過去180日分の勤怠データが参照可能）
 * メールアドレス：```test@example.com```
-* パスワード：```coachtech1106```
+* パスワード：```coachtech1106```　<br>
+※メール認証画面が表示された場合は、メールを再送して認証してください。
 
 ## テスト
 #### テスト用DB構築
@@ -85,13 +92,23 @@
 14. ```vendor/bin/phpunit tests/Feature/SetAdminAttendanceRequest.php```
 
 
-### テスト用環境変数
+### テスト用環境変数（.env.testing)（コメントアウトされている値については解除してください）
 | 変数名              | 値                                              | 備考                                                                |
 | ------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
 | APP_ENV             | testing(.env.testingの場合)                     | PHP Unitテスト時に接続する環境名                                    |
 | APP_KEY             | 既存の値を削除する                              | Laravelアプリケーションの暗号化に使用されるキー。再作成するため削除 |
+| DB_CONNECTION       | mysql                                      | 接続するデータベース接続名                    |
 | DB_HOST             | mysql                                           | 接続するデータベース                                                |
+| DB_PORT             | 3306                                      | データベース接続時に利用するポート                  |
 | DB_DATABASE         | demo_test                                    | 接続するデータベース名                                              |
 | DB_USERNAME         | root                                            | データベースに接続時のユーザー名                                    |
 | DB_PASSWORD         | docker-compose.ymlの「MYSQL_ROOT_PASSWORD」参照 | データベースに接続時のパスワード                                    |
-| MAIL_FROM_ADDRESS   | ```hello@example.com```                           | メール認証時の送信元メールアドレス                                  |
+| SESSION_ADMIN_DRIVER| database                                  | 管理者ユーザで使用するセッションの保管場所     |
+| SESSION_TABLE       | sessions                                  | 一般ユーザで使用するセッションテーブル名        |
+| SESSION_TABLE_ADMIN | admin_sessions                            | 管理者ユーザで使用するセッションテーブル名        |
+| SESSION_COOKIE_USER | user_session                              | 一般ユーザで使用するクッキー名        |
+| SESSION_COOKIE_ADMIN | admin_session                            | 管理者ユーザで使用するクッキー名      |
+| MAIL_MAILER       | smtp                                        | メール認証で使用するサービス      |
+| MAIL_HOST         | mailhog                                     | メール認証時に使用するホスト名      |
+| MAIL_PORT         | 1025                                        | メール認証時に使用するポート      |
+| MAIL_FROM_ADDRESS | ```hello@example.com```                     | メール認証時の送信元メールアドレス      |
