@@ -1,11 +1,9 @@
-/* 全体のレイアウト調整 */
 .container {
     max-width: 900px;
     margin: 0 auto;
     padding: 40px;
 }
 
-/* タイトルのスタイル */
 .attendanceList__title h1 {
     font-size: 30px;
     font-weight: bold;
@@ -14,7 +12,6 @@
     padding-left: 10px;
 }
 
-/* タブのデザイン */
 .attendanceRequest__tab {
     display: flex;
     justify-content: flex-start;
@@ -62,6 +59,13 @@ td:last-child {
     text-align: center;
 }
 
+table td:nth-child(4) {
+    width: 200px;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+}
+
 tbody td {
     padding: 15px;
     border-bottom: 3px solid #e1e1e1;
@@ -82,4 +86,18 @@ td a {
 
 td a:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 850px) {
+table td {
+    font-size: 10px;
+    width: 100px;
+    word-wrap: break-word;
+    text-align:left;
+    overflow: hidden;
+    }
+
+table th {
+    font-size: 14px;
+}
 }

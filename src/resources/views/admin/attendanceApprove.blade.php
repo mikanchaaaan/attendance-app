@@ -104,7 +104,7 @@
                     @endforeach
                     <tr>
                         <th>備考</th>
-                        <td>
+                        <td colspan="3">
                             @if($isPending)
                                 <textarea class="requesting" name="comment" readonly>{{ ($attendanceRequest->comment) }}</textarea>
                             @else

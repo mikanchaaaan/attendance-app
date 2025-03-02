@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attendance_request_id')->constrained()->cascadeOnDelete();
             $table->foreignId('rest_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('original_rest_id')->nullable();
+            $table->foreign('original_rest_id')->references('id')->on('rests')->onDelete('cascade');
             $table->timestamps();
         });
     }

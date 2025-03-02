@@ -92,7 +92,8 @@
 11. ```vendor/bin/phpunit tests/Feature/SetUserAttendanceRequest.php```
 12. ```vendor/bin/phpunit tests/Feature/GetAdminAttendanceList.php```
 13. ```vendor/bin/phpunit tests/Feature/GetAdminAttendanceDetail.php```
-14. ```vendor/bin/phpunit tests/Feature/SetAdminAttendanceRequest.php```
+14. ```vendor/bin/phpunit tests/Feature/GetAdminStaffList.php```
+15. ```vendor/bin/phpunit tests/Feature/SetAdminAttendanceRequest.php```
 
 
 ### テスト用環境変数（.env.testing）（コメントアウトされている値については解除してください）

@@ -9,6 +9,7 @@ use App\Models\AttendanceRequest;
 use App\Http\Requests\AttendanceRequestForm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserRequestAttendanceController extends Controller
 {
@@ -71,10 +72,21 @@ class UserRequestAttendanceController extends Controller
                     'rest_in_time' => $restData['rest_in_time'],
                     'rest_out_time' => $restData['rest_out_time'],
                 ]);
-                $attendanceRequest->rests()->attach($rest->id);
+                $rests[] = $rest; // 作成した rest を配列に追加
+            }
+
+            $originalRests = DB::table('attendance_rest')
+                ->where('attendance_id', $attendance->id)
+                ->pluck('rest_id');
+
+            foreach ($rests as $rest) {
+                // `$originalRests` から最初の `rest_id` を選択
+                $originalRest = $originalRests->shift(); // `pluck` で取得したコレクションから1つずつ取得する
+                $attendanceRequest->rests()->attach($rest->id, [
+                    'original_rest_id' => $originalRest ? $originalRest : null, // 取得できなければ null
+                ]);
             }
         }
-
         return redirect('/stamp_correction_request/list');
     }
 

@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\AttendanceRequest;
 use App\Http\Requests\AttendanceRequestForm;
+use Illuminate\Support\Facades\DB;
 
 class AdminRequestAttendanceController extends Controller
 {
@@ -67,20 +68,22 @@ class AdminRequestAttendanceController extends Controller
             'clock_out_time' => $attendanceRequest->requested_clock_out_time,
         ]);
 
-        $restRequests = $attendanceRequest->rests()->get();
+        $attendanceRequestRests = DB::table('attendance_request_rest')
+            ->where('attendance_request_id', $attendanceRequest->id)
+            ->get();
 
-        foreach ($restRequests as $restRequest) {
-            $rest = $attendance->rests()->where('rests.id', $restRequest->id)->first();
+        foreach ($attendanceRequestRests as $attendanceRequestRest) {
+            $originalRest = Rest::find($attendanceRequestRest->original_rest_id);
 
-            if ($rest) {
-                $rest->update([
-                    'rest_in_time' => $restRequest->rest_in_time,
-                    'rest_out_time' => $restRequest->rest_out_time,
-                ]);
+            if ($originalRest) {
+                $rest = Rest::find($attendanceRequestRest->rest_id);
+                $originalRest->update([
+                    'rest_in_time' => $rest->rest_in_time,
+                    'rest_out_time' => $rest->rest_out_time,
+                    ]);
             }
         }
-
-        $attendanceRequest->update(['status' => 'approved']);
+            $attendanceRequest->update(['status' => 'approved']);
 
         return redirect('/stamp_correction_request/list?tab=approved');
     }

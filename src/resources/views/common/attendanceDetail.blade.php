@@ -117,7 +117,7 @@
                                 @if((Auth::guard('admin')->check()))
                                     <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="{{ old('rests.' . $rest->id . '.rest_in_time', $rest->formatted_rest_in_time) }}">
                                 @elseif($isPending)
-                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_in_time)" readonly>
+                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_in_time]" value="@formatTime($attendanceRequest->rests->get($index)->rest_in_time)" readonly>
                                 @else
                                     <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_in_time]" value="{{ old('rests.' . $rest->id . '.rest_in_time', $rest->formatted_rest_in_time) }}">
                                 @endif
@@ -127,7 +127,7 @@
                                 @if((Auth::guard('admin')->check()))
                                     <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="{{ old('rests.' . $rest->id . '.rest_out_time', $rest->formatted_rest_out_time) }}">
                                 @elseif($isPending)
-                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($attendanceRequest->rests[$index]->rest_out_time)" readonly>
+                                    <input type="text" class="requesting" name="rests[{{ $rest->id }}][rest_out_time]" value="@formatTime($attendanceRequest->rests->get($index)->rest_out_time)" readonly>
                                 @else
                                     <input type="text" class="notRequesting" name="rests[{{ $rest->id }}][rest_out_time]" value="{{ old('rests.' . $rest->id . '.rest_out_time', $rest->formatted_rest_out_time) }}">
                                 @endif
