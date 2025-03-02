@@ -23,6 +23,7 @@ return [
     ],
     'confirmed' => 'パスワードと一致しません',
     'unique'    => '同じ :attribute は使用できません。',
+    'date_format' => ':attribute は :format 形式で入力してください。',
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -56,6 +57,10 @@ return [
         'email'                 => 'メールアドレス',
         'password'              => 'パスワード',
         'password_confirmation' => 'パスワード確認',
+        'clock_in_time' => '出勤時間',
+        'clock_out_time' => '退勤時間',
+        'rests.*.rest_in_time' => '休憩開始時間',
+        'rests.*.rest_out_time' => '休憩終了時間',
     ],
 
 ];
